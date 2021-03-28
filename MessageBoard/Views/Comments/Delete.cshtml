@@ -1,0 +1,43 @@
+﻿@model BugTracker.ViewModels.ProjectBugCommentViewModel
+
+@{ ViewData["Title"] = "Delete comment"; }
+
+<h3>
+	<span class="alert-danger">
+		Are you sure you want to delete this comment?
+	</span>
+</h3>
+<dl class="row">
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Bug.Title)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Bug.Title)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Comment.Body)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Comment.Body)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Comment.UserName)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Comment.UserName)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Comment.CreationTime)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Comment.CreationTime)
+	</dd>
+</dl>
+
+<form asp-action="Delete">
+	<input type="hidden" asp-for="Comment.Id" />
+	<input type="submit" value="Delete" class="btn btn-danger" />
+	<a asp-controller="Comments" asp-action="View" asp-route-id="@Model.Bug.Id" class="btn btn-secondary">
+		Keep
+	</a>
+</form>

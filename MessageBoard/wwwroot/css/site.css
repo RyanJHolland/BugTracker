@@ -1,0 +1,129 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+.comment {
+  border: 1px solid #0366d6;
+}
+
+.break-long-words {
+  word-wrap: hyphenate;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.width-limit {
+  width: 50%;
+}
+
+.bug-container {
+  padding: 25px;
+}
+
+.text-color {
+  color: #1c1c54;
+}
+
+.light-bg {
+  background: #cdcdea;
+}
+
+.dark-bg {
+  background: #9292ad;
+}
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.background {
+  padding: 25px;
+  background: #cdcdea;
+  box-shadow: 0 2rem .75rem #202d39;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #202d39;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #202d39;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem #202d39;
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+  /*
+    background-color: #202d39;
+  */
+  /*
+    background: rgb(34,193,195);
+    background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+  */
+}
+
+body {
+  /* Margin bottom by footer height */
+  word-wrap: break-word;
+  margin-bottom: 60px;
+  background: #1c1c54;
+  background: linear-gradient(180deg, #1c1c54 0%, #9c9cbc 100%);
+  /*
+  background: linear-gradient(0deg, rgb(34,193,195) 0%, rgb(139, 199, 200) 100%);
+  /*
+  background: rgb(34,193,195);
+  background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+  */
+  color: #202d39;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px; /* Vertically center the text there */
+}

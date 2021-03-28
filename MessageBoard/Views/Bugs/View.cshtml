@@ -1,0 +1,85 @@
+﻿@model BugTracker.ViewModels.ProjectBugCommentsViewModel
+
+@{ ViewData["Title"] = Model.Bug.Title; }
+
+<div class="bug-container">
+
+	<dl class="row">
+		<dt class="col-sm-2">
+			Project
+		</dt>
+		<dd class="col-sm-10">
+			<a asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">
+				@Model.Project.Name
+			</a>
+		</dd>
+		<dt class="col-sm-2">
+			Owner
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Bug.UserName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Bug.CreationTime)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Bug.CreationTime)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Bug.Title)
+		</dt>
+		<dd class="col-sm-10 font-weight-bold">
+			@Html.DisplayFor(model => model.Bug.Title)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Bug.Body)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Bug.Body)
+		</dd>
+	</dl>
+		<div class="row">
+			<div class="col">
+				<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Bug.Id" class="btn btn-sm btn-primary">Reply</a>
+				<a asp-action="Edit" asp-route-id="@Model.Bug.Id" class="btn btn-sm btn-secondary">Edit</a>
+				<a asp-action="Delete" asp-route-id="@Model.Bug.Id" class="btn btn-sm btn-danger">Delete</a>
+			</div>
+		</div>
+
+
+	<br />
+
+	@foreach (var item in Model.Comments)
+	{
+		<div class="border-top">
+			<br />
+				<dl class="row">
+					<dt class="col-sm-2">
+						Commenter:
+					</dt>
+					<dd class="col-sm-4">
+						@Html.DisplayFor(model => item.UserName)
+					</dd>
+					<dt class="col-sm-2">
+					</dt>
+					<dd class="col-sm-4">
+						<strong>Time:</strong> @Html.DisplayFor(model => item.CreationTime)
+					</dd>
+					<dt class="col-sm-2">
+						Comment:
+					</dt>
+					<dd class="col-sm-10">
+						@Html.DisplayFor(model => item.Body)
+					</dd>
+				</dl>
+				<div class="row">
+					<div class="col">
+						<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Bug.Id" class="btn btn-sm btn-primary">Reply</a>
+						<a asp-controller="Comments" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Edit</a>
+						<a asp-controller="Comments" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+						<br /><br />
+					</div>
+				</div>
+			</div>
+		}
+</div>

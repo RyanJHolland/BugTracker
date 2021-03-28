@@ -1,0 +1,45 @@
+﻿@model BugTracker.ViewModels.ProjectBugViewModel
+
+@{ ViewData["Title"] = "Delete Bug"; }
+
+
+<h3>
+	<span class="alert-danger">
+		Are you sure you want to delete the bug "@Model.Bug.Title"?
+	</span>
+</h3>
+<dl class="row">
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Bug.Title)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Bug.Title)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Bug.Body)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Bug.Body)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Bug.UserName)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Bug.UserName)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(model => model.Bug.CreationTime)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(model => model.Bug.CreationTime)
+	</dd>
+</dl>
+
+<form asp-action="Delete">
+	<input type="hidden" asp-for="Bug.Id" />
+	<input type="submit" value="Delete" class="btn btn-danger" />
+	<a asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id" class="btn btn-secondary">
+		Keep
+	</a>
+</form>
+
