@@ -4,19 +4,21 @@ using BugTracker.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BugTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210328043729_added Tag, Status, and Priority to Bug")]
+    partial class addedTagStatusandPrioritytoBug
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("BugTracker.Models.Bug", b =>
@@ -30,9 +32,6 @@ namespace BugTracker.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -43,6 +42,9 @@ namespace BugTracker.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tag")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -111,48 +113,6 @@ namespace BugTracker.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Project");
-                });
-
-            modelBuilder.Entity("BugTracker.Models.Zug", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Body")
-                        .HasMaxLength(5000)
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ParentProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Zug");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

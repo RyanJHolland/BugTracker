@@ -33,7 +33,7 @@
 											@if (Model.GetType().GetProperty("Project") != null)
 											{
 							<text>
-								<li class="nav-item nav-link">></li>
+								<li class="nav-item nav-link">/</li> <!-- divider -->
 								<li class="nav-item">
 									<a class="nav-link text-dark" asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">
 										<strong>
@@ -45,7 +45,7 @@
 															@if (Model.GetType().GetProperty("Bug") != null)
 															{
 											<text>
-												<li class="nav-item nav-link">></li>
+												<li class="nav-item nav-link">/</li> <!-- divider -->
 												<li class="nav-item">
 													<a class="nav-link text-dark" asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id">
 														<strong>

@@ -22,15 +22,21 @@ namespace BugTracker.Controllers
 			_context = context;
 		}
 
-		// GET: Bugs/View/5
-		// This is where a user reads a bug after clicking on it.
-		public async Task<IActionResult> View(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+		/*
+		 * GET: Bugs/View/5
+		 * This is where a user reads a bug after clicking on it.
+		 *	id:					projectID
+		 *	sortBy:			field to sort by. Examples: Date, Priority
+		 *	sortOrder:	ASC or DESC, default ASC
+		*/
 
+		public async Task<IActionResult> View
+			(
+			int id,
+			string sortBy = "CreationTime",
+			string sortOrder = "ASC"
+			)
+		{
 			var bug = await _context.Bug
 					.FirstOrDefaultAsync(m => m.Id == id);
 			if (bug == null)
@@ -46,7 +52,7 @@ namespace BugTracker.Controllers
 			}
 
 			var comments = await _context.Comment
-					.FromSqlRaw<Comment>($"SELECT top(10) * FROM Comment WHERE ParentBugId={id} ORDER BY CreationTime ASC;")
+					.FromSqlRaw<Comment>($"SELECT * FROM Comment WHERE ParentBugId={id} ORDER BY {sortBy} {sortOrder};")
 					.ToListAsync();
 
 			ProjectBugCommentsViewModel vm = new ProjectBugCommentsViewModel
@@ -72,11 +78,14 @@ namespace BugTracker.Controllers
 
 			var bug = new Bug();
 
-			ProjectBugViewModel vm = new ProjectBugViewModel
+			ProjectBugViewModel vm = new()
 			{
 				Project = project,
 				Bug = bug
 			};
+			vm.Bug.Priority = Bug.PriorityEnum.Medium;
+			vm.Bug.Category = Bug.CategoryEnum.Bug;
+			vm.Bug.Status = Bug.StatusEnum.Open;
 
 			return View(vm);
 		}
@@ -85,7 +94,7 @@ namespace BugTracker.Controllers
 		[Authorize]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Title,Body")] Bug bug, int id)
+		public async Task<IActionResult> Create([Bind("Title,Body,Priority,Category,Status")] Bug bug, int id)
 		{
 			int projectId = id; // This is just to clarify the following code.
 			if (ModelState.IsValid)
@@ -132,7 +141,7 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			ProjectBugViewModel vm = new ProjectBugViewModel
+			ProjectBugViewModel vm = new()
 			{
 				Project = project,
 				Bug = bug
@@ -145,7 +154,7 @@ namespace BugTracker.Controllers
 		[Authorize]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Title,Body")] Bug bug)
+		public async Task<IActionResult> Edit(int id, [Bind("Title,Body,Priority,Category,Status")] Bug bug)
 		{
 			if (ModelState.IsValid)
 			{
@@ -159,6 +168,9 @@ namespace BugTracker.Controllers
 					}
 					bugToUpdate.Title = bug.Title;
 					bugToUpdate.Body = bug.Body;
+					bugToUpdate.Priority = bug.Priority;
+					bugToUpdate.Category = bug.Category;
+					bugToUpdate.Status = bug.Status;
 
 					_context.Update(bugToUpdate);
 					await _context.SaveChangesAsync();

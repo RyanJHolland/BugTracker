@@ -42,7 +42,7 @@ namespace BugTracker.Controllers
 			}
 
 			var bugs = await _context.Bug
-					.FromSqlRaw<Bug>($"SELECT top(10) * FROM Bug WHERE ParentProjectId={id} ORDER BY CreationTime DESC;")
+					.FromSqlRaw<Bug>($"SELECT * FROM Bug WHERE ParentProjectId={id} ORDER BY CreationTime DESC;")
 					.ToListAsync();
 
 			ProjectBugsViewModel vm = new ProjectBugsViewModel

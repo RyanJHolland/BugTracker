@@ -38,8 +38,8 @@
 <form asp-action="Delete">
 	<input type="hidden" asp-for="Bug.Id" />
 	<input type="submit" value="Delete" class="btn btn-danger" />
-	<a asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id" class="btn btn-secondary">
-		Keep
+	<a asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id">
+		Cancel
 	</a>
 </form>
 

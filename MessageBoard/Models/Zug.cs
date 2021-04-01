@@ -3,33 +3,31 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BugTracker.Models
 {
-	public class Bug
+	public class Zug
 	{
 		public int Id { get; set; }
 
 		[MinLength(1)]
 		[MaxLength(100)]
 		[Required(ErrorMessage = "Please enter a title for this bug.")]
-		[Display(Name = "Title")]
+		[Display(Name = "Bug")]
 		public string Title { get; set; }
 
 		[MaxLength(5000)]
-		[Display(Name = "Details")]
 		public string Body { get; set; }
 
 		[Display(Name = "User Id")]
 		public string UserId { get; set; }
 
-		[Display(Name = "Owner")]
+		[Display(Name = "User")]
 		public string UserName { get; set; }
 
-		[Display(Name = "Created")]
+		[Display(Name = "Creation Time")]
 		public DateTime CreationTime { get; set; }
 
 		[Display(Name = "Project Id")]
 		public int ParentProjectId { get; set; }
 
-		[Required(ErrorMessage = "Please choose a priority.")]
 		public PriorityEnum Priority { get; set; }
 
 		public enum PriorityEnum
@@ -40,8 +38,7 @@ namespace BugTracker.Models
 			Low
 		}
 
-		[Required(ErrorMessage = "Please choose a category.")]
-		[Display(Name = "Category")]
+		[Display(Name = "Type")]
 		public CategoryEnum Category { get; set; }
 
 		public enum CategoryEnum

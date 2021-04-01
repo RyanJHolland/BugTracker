@@ -8,14 +8,23 @@
 	<thead>
 		<tr>
 			<p>
-				<a asp-controller="Bugs" asp-action="Create" asp-route-id="@Model.Project.Id" class="btn btn-primary btn-sm">
-					Create New Bug
+				<a asp-controller="Bugs" asp-action="Create" asp-route-id="@Model.Project.Id">
+					Create Ticket
 				</a>
 			</p>
 		</tr>
 		<tr>
 			<th>
+				@Html.DisplayNameFor(model => model.Bugs[0].Category)
+			</th>
+			<th>
 				@Html.DisplayNameFor(model => model.Bugs[0].Title)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Bugs[0].Status)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Bugs[0].Priority)
 			</th>
 			<th>
 				@Html.DisplayNameFor(model => model.Bugs[0].UserName)
@@ -28,21 +37,28 @@
 	<tbody>
 		@foreach (var item in Model.Bugs)
 		{
-<tr>
-<td>
-	<a asp-controller="Bugs" asp-action="View" asp-route-id="@item.Id">
-		<strong>
-			@Html.DisplayFor(modelItem => item.Title)
-		</strong>
-	</a>
-</td>
-<td>
-	@Html.DisplayFor(modelItem => item.UserName)
-</td>
-<td>
-	@Html.DisplayFor(modelItem => item.CreationTime)
-</td>
-</tr>
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.Category)
+			</td>
+			<td>
+				<a asp-controller="Bugs" asp-action="View" asp-route-id="@item.Id">
+					@Html.DisplayFor(modelItem => item.Title)
+				</a>
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.Status)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.Priority)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.UserName)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.CreationTime)
+			</td>
+		</tr>
 }
 	</tbody>
 </table>

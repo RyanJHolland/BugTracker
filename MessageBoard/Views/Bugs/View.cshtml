@@ -2,35 +2,67 @@
 
 @{ ViewData["Title"] = Model.Bug.Title; }
 
-<div class="bug-container">
+<!-- Title -->
+<h2 class="mb-header">
+	@Model.Bug.Title
+</h2>
 
+
+<!-- Info display -->
+<div class="bug-container">
 	<dl class="row">
+
+		<!-- Project info -->
 		<dt class="col-sm-2">
 			Project
 		</dt>
-		<dd class="col-sm-10">
+		<dd class="col-sm-4">
 			<a asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">
 				@Model.Project.Name
 			</a>
 		</dd>
+
+		<!-- Category info -->
 		<dt class="col-sm-2">
-			Owner
+			@Html.DisplayNameFor(model => model.Bug.Category)
 		</dt>
-		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Bug.UserName)
+		<dd class="col-sm-4">
+			@Html.DisplayFor(model => model.Bug.Category)
 		</dd>
+
+		<!-- Creation time info -->
 		<dt class="col-sm-2">
 			@Html.DisplayNameFor(model => model.Bug.CreationTime)
 		</dt>
-		<dd class="col-sm-10">
+		<dd class="col-sm-4">
 			@Html.DisplayFor(model => model.Bug.CreationTime)
 		</dd>
+
+		<!-- Priority info -->
 		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Bug.Title)
+			@Html.DisplayNameFor(model => model.Bug.Priority)
 		</dt>
-		<dd class="col-sm-10 font-weight-bold">
-			@Html.DisplayFor(model => model.Bug.Title)
+		<dd class="col-sm-4">
+			@Html.DisplayFor(model => model.Bug.Priority)
 		</dd>
+
+		<!-- Owner info -->
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Bug.UserName)
+		</dt>
+		<dd class="col-sm-4">
+			@Html.DisplayFor(model => model.Bug.UserName)
+		</dd>
+
+		<!-- Status info -->
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Bug.Status)
+		</dt>
+		<dd class="col-sm-4">
+			@Html.DisplayFor(model => model.Bug.Status)
+		</dd>
+
+		<!-- Body info -->
 		<dt class="col-sm-2">
 			@Html.DisplayNameFor(model => model.Bug.Body)
 		</dt>
@@ -38,48 +70,71 @@
 			@Html.DisplayFor(model => model.Bug.Body)
 		</dd>
 	</dl>
-		<div class="row">
-			<div class="col">
-				<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Bug.Id" class="btn btn-sm btn-primary">Reply</a>
-				<a asp-action="Edit" asp-route-id="@Model.Bug.Id" class="btn btn-sm btn-secondary">Edit</a>
-				<a asp-action="Delete" asp-route-id="@Model.Bug.Id" class="btn btn-sm btn-danger">Delete</a>
-			</div>
-		</div>
 
+	<!-- Actions -->
+	<div class="row">
+		<div class="col">
+
+			<!-- Reply -->
+			<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Bug.Id">Reply</a>
+			|
+			<!-- Edit -->
+			<a asp-action="Edit" asp-route-id="@Model.Bug.Id">Edit</a>
+			|
+			<!-- Delete -->
+			<a asp-action="Delete" asp-route-id="@Model.Bug.Id">Delete</a>
+		</div>
+	</div>
 
 	<br />
 
+	<!-- Comments display -->
 	@foreach (var item in Model.Comments)
 	{
 		<div class="border-top">
 			<br />
-				<dl class="row">
-					<dt class="col-sm-2">
-						Commenter:
-					</dt>
-					<dd class="col-sm-4">
-						@Html.DisplayFor(model => item.UserName)
-					</dd>
-					<dt class="col-sm-2">
-					</dt>
-					<dd class="col-sm-4">
-						<strong>Time:</strong> @Html.DisplayFor(model => item.CreationTime)
-					</dd>
-					<dt class="col-sm-2">
-						Comment:
-					</dt>
-					<dd class="col-sm-10">
-						@Html.DisplayFor(model => item.Body)
-					</dd>
-				</dl>
-				<div class="row">
-					<div class="col">
-						<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Bug.Id" class="btn btn-sm btn-primary">Reply</a>
-						<a asp-controller="Comments" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Edit</a>
-						<a asp-controller="Comments" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
-						<br /><br />
-					</div>
+			<dl class="row">
+
+				<!-- Comment user name info -->
+				<dt class="col-sm-2">
+					Commenter
+				</dt>
+				<dd class="col-sm-4">
+					@Html.DisplayFor(model => item.UserName)
+				</dd>
+
+				<!-- Creation date info -->
+				<dt class="col-sm-2">
+					Time
+				</dt>
+				<dd class="col-sm-4">
+					@Html.DisplayFor(model => item.CreationTime)
+				</dd>
+
+				<!-- Comment body info -->
+				<dt class="col-sm-2">
+					Comment
+				</dt>
+				<dd class="col-sm-10">
+					@Html.DisplayFor(model => item.Body)
+				</dd>
+			</dl>
+
+			<!-- Comment actions -->
+			<div class="row">
+				<div class="col">
+
+					<!-- Reply to comment -->
+					<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Bug.Id">Reply</a>
+					|
+					<!-- Edit comment -->
+					<a asp-controller="Comments" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+					|
+					<!-- Delete comment -->
+					<a asp-controller="Comments" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+					<br /><br />
 				</div>
 			</div>
-		}
+		</div>
+	}
 </div>

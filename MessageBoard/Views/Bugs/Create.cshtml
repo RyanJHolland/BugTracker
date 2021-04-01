@@ -2,25 +2,57 @@
 
 @{ ViewData["Title"] = "New bug"; }
 
+<!-- Title -->
 <h2 class="mb-header">
 	Create new bug
 </h2>
 
+<!-- Form -->
 <form asp-action="Create" asp-route-ParentProjectId="@Model.Project.Id">
 	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+	<!-- Title input -->
 	<div class="form-group">
 		<label asp-for="Bug.Title" class="control-label"></label>
 		<input asp-for="Bug.Title" class="form-control" />
 		<span asp-validation-for="Bug.Title" class="text-danger"></span>
 	</div>
+
+	<!-- Body input -->
 	<div class="form-group">
 		<label asp-for="Bug.Body" class="control-label"></label>
 		<textarea asp-for="Bug.Body" class="form-control" rows="10" cols="75"></textarea>
 		<span asp-validation-for="Bug.Body" class="text-danger"></span>
 	</div>
+
+	<!-- Priority input -->
 	<div class="form-group">
+		<label asp-for="Bug.Priority" class="control-label"></label>
+		@Html.DropDownListFor(
+						 m => m.Bug.Priority,
+						 new SelectList(
+							 Enum.GetValues(typeof(Bug.PriorityEnum))
+							 )
+						 )
+		<span asp-validation-for="Bug.Priority" class="text-danger"></span>
+	</div>
+
+	<!-- Category input -->
+	<div class="form-group">
+		<label asp-for="Bug.Category" class="control-label"></label>
+		@Html.DropDownListFor(m => m.Bug.Category, new SelectList(Enum.GetValues(typeof(Bug.CategoryEnum))))
+		<span asp-validation-for="Bug.Category" class="text-danger"></span>
+	</div>
+
+	<!-- Buttons -->
+	<div class="form-group">
+
+		<!-- Submit button -->
 		<input type="submit" value="Create" class="btn btn-primary" />
-		<a asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id" class="btn btn-secondary">Cancel</a>
+
+		<!-- Cancel button -->
+		<a asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">Cancel</a>
 	</div>
 </form>
 

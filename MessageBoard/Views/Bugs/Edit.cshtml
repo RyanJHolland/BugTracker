@@ -2,25 +2,67 @@
 
 @{ ViewData["Title"] = "Edit bug"; }
 
+<!-- Title -->
+<h2 class="mb-header">
+	@Model.Bug.Title
+</h2>
+
+<!-- Form -->
 <div class="bug-container">
 	<div class="row">
 		<div class="col">
 			<form asp-action="Edit" asp-route-id="@Model.Bug.Id">
 				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 				<input type="hidden" asp-for="Bug.Id" />
+
+				<!-- Title input -->
 				<div class="form-group">
 					<label asp-for="Bug.Title" class="control-label"></label>
 					<input asp-for="Bug.Title" class="form-control" />
 					<span asp-validation-for="Bug.Title" class="text-danger"></span>
 				</div>
+
+				<!-- Body input -->
 				<div class="form-group">
 					<label asp-for="Bug.Body" class="control-label"></label>
 					<textarea asp-for="Bug.Body" class="form-control" rows="10" cols="75"></textarea>
 					<span asp-validation-for="Bug.Body" class="text-danger"></span>
 				</div>
+
+				<!-- Priority input -->
 				<div class="form-group">
+					<label asp-for="Bug.Priority" class="control-label"></label>
+					@Html.DropDownListFor(
+							 m => m.Bug.Priority,
+							 new SelectList(
+								 Enum.GetValues(typeof(Bug.PriorityEnum))
+								 )
+							 )
+					<span asp-validation-for="Bug.Priority" class="text-danger"></span>
+				</div>
+
+				<!-- Category input -->
+				<div class="form-group">
+					<label asp-for="Bug.Category" class="control-label"></label>
+					@Html.DropDownListFor(m => m.Bug.Category, new SelectList(Enum.GetValues(typeof(Bug.CategoryEnum))))
+					<span asp-validation-for="Bug.Category" class="text-danger"></span>
+				</div>
+
+				<!-- Status input -->
+				<div class="form-group">
+					<label asp-for="Bug.Status" class="control-label"></label>
+					@Html.DropDownListFor(m => m.Bug.Status, new SelectList(Enum.GetValues(typeof(Bug.StatusEnum))))
+					<span asp-validation-for="Bug.Status" class="text-danger"></span>
+				</div>
+
+				<!-- Buttons -->
+				<div class="form-group">
+
+					<!-- Submit button -->
 					<input type="submit" value="Save" class="btn btn-primary" />
-					<a asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id" class="btn btn-secondary">
+
+					<!-- Cancel button -->
+					<a asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id">
 						Cancel
 					</a>
 				</div>
@@ -30,6 +72,6 @@
 </div>
 
 
-	@section Scripts {
-		@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-	}
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

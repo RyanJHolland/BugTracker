@@ -6,5 +6,7 @@ namespace BugTracker.ViewModels
 	{
 		public Project Project { get; set; }
 		public Bug Bug { get; set; }
+
+		//		m => m.Bug.Priority, new SelectList(Enum.GetValues(typeof(Bug.PriorityEnum)))
 	}
 }
