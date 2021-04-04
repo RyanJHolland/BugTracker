@@ -7,5 +7,12 @@ namespace BugTracker.ViewModels
 	{
 		public Project Project { get; set; }
 		public List<Bug> Bugs { get; set; }
+
+		/*
+		 * orderBy:	category by which to sort the tickets
+		 * order: ASC or DESC
+		 */
+		public string orderBy { get; set; }
+		public string order { get; set; }
 	}
 }

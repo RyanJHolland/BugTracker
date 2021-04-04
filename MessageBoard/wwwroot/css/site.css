@@ -1,8 +1,88 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+/* gray-violet monochrome color scheme */
+:root {
+  --darkest: black;
+  --dark: #3b3c55;
+  --light: #9985b6;
+  --lightest: #d6d3db;
+  --bright: #d6d3db;
+  --cta: #ee411d;
+  --link: #0645AD;
+}
+
+/* pea-beige bichromal color scheme
+:root {
+  --darkest: #49402b;
+  --dark: #88915f;
+  --light: #8fd1b0;
+  --lightest: #d9eac8;
+  --bright: #c5cea3;
+  --cta: #cbf038;
+  --link: #0645AD;
+}
+*/
+
+/* gray & blue color scheme
+:root {
+  --darkest: black;
+  --dark: #CDCDCD;
+  --light: #E9E9E9;
+  --lightest: white;
+  --bright: #99D3DF;
+  --cta: #88BBD6;
+  --link: #0645AD;
+}
+*/
+
+/* mint & orange color scheme
+:root {
+  --darkest: #051821;
+  --dark: #1a4645;
+  --light: #266867;
+  --lightest: white;
+  --bright: #f58800;
+  --cta: #F7B733;
+  --link: #0645AD;
+}
+*/
+/* muted color scheme
+:root {
+  --darkest: #2e2e2e;
+  --dark: #898989;
+  --light: #E9E9E6;
+  --lightest: #F9F9F9;
+  --bright: #D67B60;
+  --cta: #F7B733;
+  --link: #0645AD;
+}
+*/
+/* watermelon color scheme
+:root {
+  --darkest: #4d6d66;
+  --dark: #789e9e;
+  --light: #b7d8d6;
+  --lightest: #F9F9F9;
+  --bright: #FE615a;
+  --cta: #F7B733;
+  --link: #0645AD;
+}*/
+
+/* purple & gold color scheme
+:root {
+  --darkest: #131214;
+  --dark: #2e2b37;
+  --light: #7533f7;
+  --lightest: #f7f4fb;
+  --bright: #f58800;
+  --cta: #FE615a;
+  --link: #0645AD;
+}
+*/
+
 .comment {
-  border: 1px solid #0366d6;
+  border: 1px solid var(--dark);
 }
 
 .break-long-words {
@@ -21,79 +101,56 @@ for details on configuring this project to bundle and minify static web assets. 
   padding: 25px;
 }
 
-.text-color {
-  color: #1c1c54;
-}
-
-.light-bg {
-  background: #cdcdea;
-}
-
-.dark-bg {
-  background: #9292ad;
-}
-
 a.navbar-brand {
     white-space: normal;
     text-align: center;
     word-break: break-all;
 }
 
-/* Provide sufficient contrast against white background */
 a {
-    color: #0366d6;
+  color: var(--link);
 }
 
+
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+  color: #fff;
+  border-color: var(--darkest);
 }
 
 .background {
   padding: 25px;
-  background: #cdcdea;
-  box-shadow: 0 2rem .75rem #202d39;
+  background: var(--lightest);
+  box-shadow: 0 2rem .75rem var(--dark);
+}
+
+.navbar {
+  background: var(--bright);
+  /* background: linear-gradient(180deg, var(--bright) 0%, var(--cta) 100%);*/
+}
+
+.border-left {
+  border-left: 2px solid var(--light) !important;
+}
+
+.nav-link {
+  color: var(--dark) !important;
+}
+.nav-link:hover {
+  color: var(--darkest) !important;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+  color: var(--lightest);
+  background-color: var(--link);
+  border-color: var(--dark);
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
+li {
+  padding-right: 15px;
+}
+
 html {
-    font-size: 14px;
-}
-
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-
-.border-top {
-    border-top: 1px solid #202d39;
-}
-
-.border-bottom {
-    border-bottom: 1px solid #202d39;
-}
-
-.box-shadow {
-    box-shadow: 0 .25rem .75rem #202d39;
-}
-
-button.accept-policy {
-    font-size: 1rem;
-    line-height: inherit;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
+  font-size: 14px;
   position: relative;
   min-height: 100%;
   /*
@@ -109,15 +166,47 @@ body {
   /* Margin bottom by footer height */
   word-wrap: break-word;
   margin-bottom: 60px;
-  background: #1c1c54;
-  background: linear-gradient(180deg, #1c1c54 0%, #9c9cbc 100%);
+  background: var(--light);
+  background: linear-gradient(180deg, var(--light) 0%, var(--dark) 100%);
   /*
   background: linear-gradient(0deg, rgb(34,193,195) 0%, rgb(139, 199, 200) 100%);
   /*
   background: rgb(34,193,195);
   background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
   */
-  color: #202d39;
+  color: var(--darkest);
+}
+
+/* overwriting bootstrap styles */
+table, table td, table th, table thead th {
+  color: var(--darkest);
+  border: 1px solid var(--light) !important;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+  border-top: 1px solid var(--darkest);
+}
+
+.border-bottom {
+  border-bottom: 1px solid var(--darkest);
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem var(--darkest);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
 }
 
 .footer {
@@ -126,4 +215,23 @@ body {
   width: 100%;
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
+}
+
+.bug-icon {
+  will-change: transform;
+  transition: transform 450ms;
+}
+.bug-icon:hover {
+  transition: transform 125ms;
+  transform: scale(1.618);
+}
+
+.table-header {
+  color: var(--dark);
+}
+.table-header:hover {
+  color: var(--dark);
+}
+.table-header:active {
+  color: var(--light);
 }

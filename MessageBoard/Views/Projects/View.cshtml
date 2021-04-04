@@ -14,51 +14,105 @@
 			</p>
 		</tr>
 		<tr>
-			<th>
-				@Html.DisplayNameFor(model => model.Bugs[0].Category)
+			<th class="text-nowrap">
+				<a class="table-header"
+					 asp-controller="Projects"
+					 asp-action="View"
+					 asp-route-id="@Model.Project.Id"
+					 asp-route-orderBy="Category"
+					 asp-route-order="@(Model.orderBy == "Category" && Model.order == "ASC" ? "DESC" : "ASC")"
+					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Category)">
+					@Html.DisplayNameFor(model => model.Bugs[0].Category)
+					<img src="~/img/sort.png" alt="sort" width="15px" />
+				</a>
 			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.Bugs[0].Title)
+			<th class="text-nowrap">
+				<a class="table-header"
+					 asp-controller="Projects"
+					 asp-action="View"
+					 asp-route-id="@Model.Project.Id"
+					 asp-route-orderBy="Title"
+					 asp-route-order="@(Model.orderBy == "Title" && Model.order == "ASC" ? "DESC" : "ASC")"
+					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Title)">
+					@Html.DisplayNameFor(model => model.Bugs[0].Title)
+					<img src="~/img/sort.png" alt="sort" width="15px" />
+				</a>
 			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.Bugs[0].Status)
+			<th class="text-nowrap">
+				<a class="table-header"
+					 asp-controller="Projects"
+					 asp-action="View"
+					 asp-route-id="@Model.Project.Id"
+					 asp-route-orderBy="Status"
+					 asp-route-order="@(Model.orderBy == "Status" && Model.order == "ASC" ? "DESC" : "ASC")"
+					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Status)">
+					@Html.DisplayNameFor(model => model.Bugs[0].Status)
+					<img src="~/img/sort.png" alt="sort" width="15px" />
+				</a>
 			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.Bugs[0].Priority)
+			<th class="text-nowrap">
+				<a class="table-header"
+					 asp-controller="Projects"
+					 asp-action="View"
+					 asp-route-id="@Model.Project.Id"
+					 asp-route-orderBy="Priority"
+					 asp-route-order="@(Model.orderBy == "Priority" && Model.order == "ASC" ? "DESC" : "ASC")"
+					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Priority)">
+					@Html.DisplayNameFor(model => model.Bugs[0].Priority)
+					<img src="~/img/sort.png" alt="sort" width="15px" />
+				</a>
 			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.Bugs[0].UserName)
+			<th class="text-nowrap">
+				<a class="table-header"
+					 asp-controller="Projects"
+					 asp-action="View"
+					 asp-route-id="@Model.Project.Id"
+					 asp-route-orderBy="UserName"
+					 asp-route-order="@(Model.orderBy == "UserName" && Model.order == "ASC" ? "DESC" : "ASC")"
+					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].UserName)">
+					@Html.DisplayNameFor(model => model.Bugs[0].UserName)
+					<img src="~/img/sort.png" alt="sort" width="15px" />
+				</a>
 			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.Bugs[0].CreationTime)
+			<th class="text-nowrap">
+				<a class="table-header"
+					 asp-controller="Projects"
+					 asp-action="View"
+					 asp-route-id="@Model.Project.Id"
+					 asp-route-orderBy="CreationTime"
+					 asp-route-order="@(Model.orderBy == "CreationTime" && Model.order == "ASC" ? "DESC" : "ASC")"
+					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].CreationTime)">
+					@Html.DisplayNameFor(model => model.Bugs[0].CreationTime)
+					<img src="~/img/sort.png" alt="sort" width="15px" />
+				</a>
 			</th>
 		</tr>
 	</thead>
 	<tbody>
 		@foreach (var item in Model.Bugs)
 		{
-		<tr>
-			<td>
-				@Html.DisplayFor(modelItem => item.Category)
-			</td>
-			<td>
-				<a asp-controller="Bugs" asp-action="View" asp-route-id="@item.Id">
-					@Html.DisplayFor(modelItem => item.Title)
-				</a>
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.Status)
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.Priority)
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.UserName)
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.CreationTime)
-			</td>
-		</tr>
+<tr>
+	<td>
+		@Html.DisplayFor(modelItem => item.Category)
+	</td>
+	<td>
+		<a asp-controller="Bugs" asp-action="View" asp-route-id="@item.Id">
+			@Html.DisplayFor(modelItem => item.Title)
+		</a>
+	</td>
+	<td>
+		@Html.DisplayFor(modelItem => item.Status)
+	</td>
+	<td>
+		@Html.DisplayFor(modelItem => item.Priority)
+	</td>
+	<td>
+		@Html.DisplayFor(modelItem => item.UserName)
+	</td>
+	<td>
+		@Html.DisplayFor(modelItem => item.CreationTime)
+	</td>
+</tr>
 }
 	</tbody>
 </table>

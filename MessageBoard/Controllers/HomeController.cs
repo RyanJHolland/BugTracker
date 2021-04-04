@@ -19,8 +19,7 @@ namespace BugTracker.Controllers
 		// GET: /Index
 		public IActionResult Index()
 		{
-			return Redirect("/Projects");
-			//return View();
+			return View();
 		}
 
 		// GET: /Privacy

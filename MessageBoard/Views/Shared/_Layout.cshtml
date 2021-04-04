@@ -9,51 +9,74 @@
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
+
+<body class="text-color">
+
 	<header>
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow mb-3 text-color dark-bg">
+
+		<!-- nav bar -->
+		<nav class="navbar navbar-light navbar-expand-sm navbar-toggleable-sm navbar box-shadow mb-3">
+
+			<!-- bug icon (also Home link) -->
+			<a class="navbar-brand bug-icon" asp-area="" asp-controller="Home" asp-action="Index">
+				<img src="~/img/bug_icon.png" alt="bug icon" width="50px" />
+			</a>
+
+			<!-- menu container -->
 			<div class="container">
-				<!-- <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BugTracker</a> -->
+
+				<!-- menu button that appears when the screen is small -->
 				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 								aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
+
+				<!-- navigation links -->
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<ul class="navbar-nav flex-grow-1">
 
+						<!-- Home link -->
 						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
-								<strong>
-									Projects
-								</strong>
+							<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+								Home
 							</a>
 						</li>
+
+						<!-- Projects link -->
+						<li class="nav-item">
+							<a class="nav-link" asp-area="" asp-controller="Projects" asp-action="Index">
+								Projects
+							</a>
+						</li>
+
+						<!-- Project link -->
+						<!-- (If this is a bug or comment, this links to its project) -->
 						@if (Model != null)
-						{<!-- If this is a bug or comment, link to the project it's under: -->
-											@if (Model.GetType().GetProperty("Project") != null)
-											{
-							<text>
-								<li class="nav-item nav-link">/</li> <!-- divider -->
-								<li class="nav-item">
-									<a class="nav-link text-dark" asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">
-										<strong>
+						{
+							@if (Model.GetType().GetProperty("Project") != null)
+							{
+								<text>
+									<li class="nav-item">
+										<a class="nav-link" asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">
 											@Model.Project.Name
-										</strong>
-									</a>
-								</li>
-							</text>} <!-- If this is a comment, link to the bug it's under: -->
-															@if (Model.GetType().GetProperty("Bug") != null)
-															{
-											<text>
-												<li class="nav-item nav-link">/</li> <!-- divider -->
-												<li class="nav-item">
-													<a class="nav-link text-dark" asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id">
-														<strong>
-															@Model.Bug.Title
-														</strong>
-													</a>
-												</li>
-											</text>}}
+										</a>
+									</li>
+								</text>
+							}
+
+							<!-- Ticket link -->
+							<!-- (If this is a comment, this links to its ticket) -->
+							@if (Model.GetType().GetProperty("Bug") != null)
+							{
+								<text>
+									<li class="nav-item">
+										<a class="nav-link" asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id">
+											@Model.Bug.Title
+										</a>
+									</li>
+								</text>
+							}
+						}
 						<!--
 						<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -65,8 +88,9 @@
 			</div>
 		</nav>
 	</header>
+
 	<div class="container">
-		<main role="main" class="pb-3 background text-color">
+		<main role="main" class="pb-3 background">
 			@RenderBody()
 		</main>
 	</div>

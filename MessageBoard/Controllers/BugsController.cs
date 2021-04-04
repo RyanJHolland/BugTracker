@@ -25,17 +25,9 @@ namespace BugTracker.Controllers
 		/*
 		 * GET: Bugs/View/5
 		 * This is where a user reads a bug after clicking on it.
-		 *	id:					projectID
-		 *	sortBy:			field to sort by. Examples: Date, Priority
-		 *	sortOrder:	ASC or DESC, default ASC
 		*/
 
-		public async Task<IActionResult> View
-			(
-			int id,
-			string sortBy = "CreationTime",
-			string sortOrder = "ASC"
-			)
+		public async Task<IActionResult> View(int id)
 		{
 			var bug = await _context.Bug
 					.FirstOrDefaultAsync(m => m.Id == id);
@@ -52,7 +44,7 @@ namespace BugTracker.Controllers
 			}
 
 			var comments = await _context.Comment
-					.FromSqlRaw<Comment>($"SELECT * FROM Comment WHERE ParentBugId={id} ORDER BY {sortBy} {sortOrder};")
+					.FromSqlRaw<Comment>($"SELECT * FROM Comment WHERE ParentBugId={id} ORDER BY CreationTime ASC;")
 					.ToListAsync();
 
 			ProjectBugCommentsViewModel vm = new ProjectBugCommentsViewModel

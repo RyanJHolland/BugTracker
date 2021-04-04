@@ -27,7 +27,10 @@ namespace BugTracker.Controllers
 
 		// GET: Projects/View/5
 		// Displays the most recent bugs on the chosen project. This is where a user browses a project's bugs.
-		public async Task<IActionResult> View(int? id)
+		public async Task<IActionResult> View(
+			int? id,
+			string orderBy = "CreationTime",
+			string order = "DESC")
 		{
 			if (id == null)
 			{
@@ -40,15 +43,41 @@ namespace BugTracker.Controllers
 			{
 				return NotFound();
 			}
+			/*
+			var bugs = await _context.Bug
+					.Where(b => b.ParentProjectId == id)
+					.ToListAsync();
+
+			bugs.Sort(delegate (Bug x, Bug y)
+			{
+				return x.GetType().GetProperty(orderBy).GetValue(orderBy) > y.GetType().GetProperty(orderBy).GetValue(orderBy);
+			});
+			*/
+
+			// Validate that the sort order parameter is a valid column
+			var props = typeof(Bug).GetProperties()
+				.Select(prop => prop.Name)
+				.ToArray();
+			if (!props.Contains(orderBy))
+			{
+				orderBy = "CreationTime";
+			}
+			// Validate the ascending or descending order parameter
+			if (order != "ASC")
+			{
+				order = "DESC";
+			}
 
 			var bugs = await _context.Bug
-					.FromSqlRaw<Bug>($"SELECT * FROM Bug WHERE ParentProjectId={id} ORDER BY CreationTime DESC;")
+					.FromSqlRaw<Bug>($"SELECT * FROM Bug WHERE ParentProjectId={id} ORDER BY {orderBy} {order};")
 					.ToListAsync();
 
 			ProjectBugsViewModel vm = new ProjectBugsViewModel
 			{
 				Project = project,
-				Bugs = bugs
+				Bugs = bugs,
+				order = order,
+				orderBy = orderBy
 			};
 
 			return View(vm);

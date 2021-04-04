@@ -1,8 +1,34 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@{ ViewData["Title"] = "Home Page"; }
 
-<div class="text-center background">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!--
+for a:
+	User	-- displays a list of my tickets
+	Dev		-- displays a list of my tickets and projects
+	PM		--
+
+-->
+<a asp-area="" asp-controller="Projects" asp-action="Index">
+	View All Projects
+</a>
+
+<br />
+
+<br />
+
+<div class="row">
+	<div class="col-6">
+		Tickets By Priority
+	</div>
+	<div class="col-6">
+		Tickets By Type
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-6">
+		Tickets By Status
+	</div>
+	<div class="col-6">
+		Tickets By User
+	</div>
 </div>
