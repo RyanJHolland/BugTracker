@@ -2,95 +2,269 @@
 
 @{ ViewData["Title"] = Model.Project.Name; }
 
-<h2 class="mb-header">@Model.Project.Name</h2>
+@*
+<!-- sidebar menu with search and filters -->
+<div class="sidebar">
 
-<table class="table">
-	<thead>
-		<tr>
-			<p>
-				<a asp-controller="Bugs" asp-action="Create" asp-route-id="@Model.Project.Id">
-					Create Ticket
-				</a>
-			</p>
-		</tr>
-		<tr>
-			<th class="text-nowrap">
-				<a class="table-header"
-					 asp-controller="Projects"
-					 asp-action="View"
-					 asp-route-id="@Model.Project.Id"
-					 asp-route-orderBy="Category"
-					 asp-route-order="@(Model.orderBy == "Category" && Model.order == "ASC" ? "DESC" : "ASC")"
-					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Category)">
-					@Html.DisplayNameFor(model => model.Bugs[0].Category)
-					<img src="~/img/sort.png" alt="sort" width="15px" />
-				</a>
-			</th>
-			<th class="text-nowrap">
-				<a class="table-header"
-					 asp-controller="Projects"
-					 asp-action="View"
-					 asp-route-id="@Model.Project.Id"
-					 asp-route-orderBy="Title"
-					 asp-route-order="@(Model.orderBy == "Title" && Model.order == "ASC" ? "DESC" : "ASC")"
-					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Title)">
-					@Html.DisplayNameFor(model => model.Bugs[0].Title)
-					<img src="~/img/sort.png" alt="sort" width="15px" />
-				</a>
-			</th>
-			<th class="text-nowrap">
-				<a class="table-header"
-					 asp-controller="Projects"
-					 asp-action="View"
-					 asp-route-id="@Model.Project.Id"
-					 asp-route-orderBy="Status"
-					 asp-route-order="@(Model.orderBy == "Status" && Model.order == "ASC" ? "DESC" : "ASC")"
-					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Status)">
-					@Html.DisplayNameFor(model => model.Bugs[0].Status)
-					<img src="~/img/sort.png" alt="sort" width="15px" />
-				</a>
-			</th>
-			<th class="text-nowrap">
-				<a class="table-header"
-					 asp-controller="Projects"
-					 asp-action="View"
-					 asp-route-id="@Model.Project.Id"
-					 asp-route-orderBy="Priority"
-					 asp-route-order="@(Model.orderBy == "Priority" && Model.order == "ASC" ? "DESC" : "ASC")"
-					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Priority)">
-					@Html.DisplayNameFor(model => model.Bugs[0].Priority)
-					<img src="~/img/sort.png" alt="sort" width="15px" />
-				</a>
-			</th>
-			<th class="text-nowrap">
-				<a class="table-header"
-					 asp-controller="Projects"
-					 asp-action="View"
-					 asp-route-id="@Model.Project.Id"
-					 asp-route-orderBy="UserName"
-					 asp-route-order="@(Model.orderBy == "UserName" && Model.order == "ASC" ? "DESC" : "ASC")"
-					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].UserName)">
-					@Html.DisplayNameFor(model => model.Bugs[0].UserName)
-					<img src="~/img/sort.png" alt="sort" width="15px" />
-				</a>
-			</th>
-			<th class="text-nowrap">
-				<a class="table-header"
-					 asp-controller="Projects"
-					 asp-action="View"
-					 asp-route-id="@Model.Project.Id"
-					 asp-route-orderBy="CreationTime"
-					 asp-route-order="@(Model.orderBy == "CreationTime" && Model.order == "ASC" ? "DESC" : "ASC")"
-					 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].CreationTime)">
-					@Html.DisplayNameFor(model => model.Bugs[0].CreationTime)
-					<img src="~/img/sort.png" alt="sort" width="15px" />
-				</a>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var item in Model.Bugs)
+	<!-- Search input field -->
+	<form class="">
+		<label style="height:13px" for="search" class="font-weight-bold">Search</label>
+		<input type="text"
+					 id="search"
+					 placeholder="search"
+					 name="search"
+					 value="@Model.search"
+					 max="100"
+					 style="width: 100px; height: 20px;" />
+		<!-- other necessary params (orderBy column and direction) -->
+		<input type="hidden"
+					 name="orderByColumn"
+					 value="@Model.orderByColumn" />
+		<input type="hidden"
+					 name="orderDirection"
+					 value="@Model.orderDirection" />
+		<input type="hidden"
+					 name="ticketsPerPage"
+					 value="@Model.ticketsPerPage" />
+	</form>
+	<br />
+
+	<!-- checkboxes -->
+	<div class="">
+		<!-- Category filter -->
+		<div id="categoryCheckboxes" class="text-nowrap">
+			<label for="categoryCheckboxes" class="font-weight-bold">
+				Category
+			</label>
+			<div class="">
+				@foreach (string enumVal in Enum.GetNames(typeof(Bug.CategoryEnum)))
+				{
+	<div class="">
+		<input type="checkbox"
+					 checked
+					 id="@enumVal"
+					 value="@enumVal"
+					 name="@enumVal" />
+		<label class="" for="@enumVal">@enumVal</label>
+	</div>}
+			</div>
+		</div>
+
+		<br />
+		<!-- Status filter -->
+		<div id="statusCheckboxes" class=" text-nowrap">
+			<label for="statusCheckboxes" class="font-weight-bold">Status</label>
+			<div class="">
+				@foreach (string enumVal in Enum.GetNames(typeof(Bug.StatusEnum)))
+				{
+	<div class="">
+		<input type="checkbox"
+					 checked
+					 id="@enumVal"
+					 value="@enumVal"
+					 name="@enumVal" />
+		<label class="" for="@enumVal">@enumVal</label>
+	</div>}
+			</div>
+		</div>
+
+		<br />
+		<!-- Priority filter -->
+		<div id="priorityCheckboxes" class=" text-nowrap border-primary">
+			<label for="priorityCheckboxes" class="font-weight-bold">Priority</label>
+			<div class="">
+				@foreach (string enumVal in Enum.GetNames(typeof(Bug.PriorityEnum)))
+				{
+	<div class="">
+		<input type="checkbox"
+					 checked
+					 id="@enumVal"
+					 value="@enumVal"
+					 name="@enumVal" />
+		<label class="" for="@enumVal">@enumVal</label>
+	</div>}
+			</div>
+		</div>
+	</div>
+</div>*@
+
+<div class="main">
+	<!-- project name -->
+	<h2 class="mb-header">
+		@Model.Project.Name
+	</h2>
+
+	<!-- new ticket link -->
+	<a asp-controller="Bugs"
+		 asp-action="Create"
+		 asp-route-id="@Model.Project.Id"
+		 class="">
+		Add New Ticket
+	</a>
+	|
+	<!-- edit project link -->
+	<a asp-controller="Projects"
+		 asp-action="Edit"
+		 asp-route-id="@Model.Project.Id">
+		Edit Project
+	</a>
+
+	<!-- ticket count display -->
+	<form>
+		Viewing
+		<!-- tickets on current page -->
+		@((Model.ticketsPerPage*Model.page) == 0 ? 1 : (Model.ticketsPerPage * Model.page))-@((Model.ticketsPerPage*(Model.page+1)) > Model.totalTicketsInQuery ? Model.totalTicketsInQuery : (Model.ticketsPerPage * (Model.page + 1)))
+		<!-- total tickets in query -->
+		of @Model.totalTicketsInQuery tickets,
+		<!-- # of tickets to display -->
+		<input type="text"
+					 name="ticketsPerPage"
+					 value="@Model.ticketsPerPage"
+					 min="1"
+					 max="99999"
+					 style="width: 40px; height: 20px;" />
+		per page.
+		<br />
+		<!-- other necessary params (orderBy column and direction) -->
+		<input type="hidden"
+					 name="orderByColumn"
+					 value="@Model.orderByColumn" />
+		<input type="hidden"
+					 name="orderDirection"
+					 value="@Model.orderDirection" />
+		<input type="hidden"
+					 name="search"
+					 value="@Model.search" />
+	</form>
+
+	<!-- Previous / Next Page links-->
+	<div class="page-controls">
+		<!-- Previous Page link -->
+		@if (Model.page > 0)
 		{
+<a asp-controller="Projects"
+	 asp-action="View"
+	 asp-route-id="@Model.Project.Id"
+	 asp-route-ticketsPerPage="@Model.ticketsPerPage"
+	 asp-route-search="@Model.search"
+	 asp-route-orderByColumn="@Model.orderByColumn"
+	 asp-route-orderDirection="@Model.orderDirection"
+	 asp-route-page="@(Model.page - 1)"
+	 alt="previous page of results">
+	Previous Page
+</a>}
+
+		@if ((Model.page > 0) && ((Model.page + 1) * Model.ticketsPerPage < Model.totalTicketsInQuery))
+		{
+<html>
+|
+</html>
+}
+		<!-- Next Page link -->
+		@if (((Model.page + 1) * Model.ticketsPerPage < Model.totalTicketsInQuery))
+		{
+<a asp-controller="Projects"
+	 asp-action="View"
+	 asp-route-id="@Model.Project.Id"
+	 asp-route-ticketsPerPage="@Model.ticketsPerPage"
+	 asp-route-search="@Model.search"
+	 asp-route-orderByColumn="@Model.orderByColumn"
+	 asp-route-orderDirection="@Model.orderDirection"
+	 asp-route-page="@(Model.page+1)"
+	 alt="next page of results">
+	Next Page
+</a>}
+	</div>
+
+	<!-- The actual search results table -->
+	<table class="table">
+		<!-- Header row -->
+		<thead>
+			<tr>
+				<!-- Category -->
+				<th class="text-nowrap">
+					<a class="table-header"
+						 asp-controller="Projects"
+						 asp-action="View"
+						 asp-route-id="@Model.Project.Id"
+						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
+						 asp-route-search="@Model.search"
+						 asp-route-orderByColumn="Category"
+						 asp-route-orderDirection="@(Model.orderByColumn == "Category" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Category)">
+						@Html.DisplayNameFor(model => model.Bugs[0].Category)
+					</a>
+				</th>
+				<th class="text-nowrap">
+					<a class="table-header"
+						 asp-controller="Projects"
+						 asp-action="View"
+						 asp-route-id="@Model.Project.Id"
+						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
+						 asp-route-search="@Model.search"
+						 asp-route-orderByColumn="Title"
+						 asp-route-orderDirection="@(Model.orderByColumn == "Title" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Title)">
+						@Html.DisplayNameFor(model => model.Bugs[0].Title)
+					</a>
+				</th>
+				<th class="text-nowrap">
+					<a class="table-header"
+						 asp-controller="Projects"
+						 asp-action="View"
+						 asp-route-id="@Model.Project.Id"
+						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
+						 asp-route-search="@Model.search"
+						 asp-route-orderByColumn="Status"
+						 asp-route-orderDirection="@(Model.orderByColumn == "Status" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Status)">
+						@Html.DisplayNameFor(model => model.Bugs[0].Status)
+					</a>
+				</th>
+				<th class="text-nowrap">
+					<a class="table-header"
+						 asp-controller="Projects"
+						 asp-action="View"
+						 asp-route-id="@Model.Project.Id"
+						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
+						 asp-route-search="@Model.search"
+						 asp-route-orderByColumn="Priority"
+						 asp-route-orderDirection="@(Model.orderByColumn == "Priority" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Priority)">
+						@Html.DisplayNameFor(model => model.Bugs[0].Priority)
+					</a>
+				</th>
+				<th class="text-nowrap">
+					<a class="table-header"
+						 asp-controller="Projects"
+						 asp-action="View"
+						 asp-route-id="@Model.Project.Id"
+						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
+						 asp-route-search="@Model.search"
+						 asp-route-orderByColumn="UserName"
+						 asp-route-orderDirection="@(Model.orderByColumn == "UserName" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].UserName)">
+						@Html.DisplayNameFor(model => model.Bugs[0].UserName)
+					</a>
+				</th>
+				<th class="text-nowrap">
+					<a class="table-header"
+						 asp-controller="Projects"
+						 asp-action="View"
+						 asp-route-id="@Model.Project.Id"
+						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
+						 asp-route-search="@Model.search"
+						 asp-route-orderByColumn="CreationTime"
+						 asp-route-orderDirection="@(Model.orderByColumn == "CreationTime" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].CreationTime)">
+						@Html.DisplayNameFor(model => model.Bugs[0].CreationTime)
+					</a>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model.Bugs)
+			{
 <tr>
 	<td>
 		@Html.DisplayFor(modelItem => item.Category)
@@ -112,7 +286,7 @@
 	<td>
 		@Html.DisplayFor(modelItem => item.CreationTime)
 	</td>
-</tr>
-}
-	</tbody>
-</table>
+</tr>}
+		</tbody>
+	</table>
+</div>

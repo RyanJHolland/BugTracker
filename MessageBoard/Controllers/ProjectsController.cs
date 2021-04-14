@@ -2,21 +2,29 @@
 using BugTracker.Models;
 using BugTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BugTracker.Controllers
 {
 	public class ProjectsController : Controller
 	{
-		private readonly ApplicationDbContext _context;
+		#region Constructor
 
-		public ProjectsController(ApplicationDbContext context)
+		private readonly ApplicationDbContext _context;
+		private readonly IHttpContextAccessor _httpContextAccessor;
+
+		public ProjectsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
 		{
+			_httpContextAccessor = httpContextAccessor;
 			_context = context;
 		}
+
+		#endregion Constructor
 
 		// Displays all projects. This is where a user selects a project to browse.
 		// GET: Projects
@@ -29,8 +37,12 @@ namespace BugTracker.Controllers
 		// Displays the most recent bugs on the chosen project. This is where a user browses a project's bugs.
 		public async Task<IActionResult> View(
 			int? id,
-			string orderBy = "CreationTime",
-			string order = "DESC")
+			string orderByColumn = "CreationTime",
+			string orderDirection = "DESC",
+			int ticketsPerPage = 10,
+			int page = 0,
+			string search = ""
+			)
 		{
 			if (id == null)
 			{
@@ -43,55 +55,58 @@ namespace BugTracker.Controllers
 			{
 				return NotFound();
 			}
-			/*
-			var bugs = await _context.Bug
-					.Where(b => b.ParentProjectId == id)
-					.ToListAsync();
-
-			bugs.Sort(delegate (Bug x, Bug y)
-			{
-				return x.GetType().GetProperty(orderBy).GetValue(orderBy) > y.GetType().GetProperty(orderBy).GetValue(orderBy);
-			});
-			*/
 
 			// Validate that the sort order parameter is a valid column
 			var props = typeof(Bug).GetProperties()
 				.Select(prop => prop.Name)
 				.ToArray();
-			if (!props.Contains(orderBy))
+			if (!props.Contains(orderByColumn))
 			{
-				orderBy = "CreationTime";
-			}
-			// Validate the ascending or descending order parameter
-			if (order != "ASC")
-			{
-				order = "DESC";
+				orderByColumn = "CreationTime";
 			}
 
+			// sanitize orderByColumn
+			if (orderDirection != "ASC")
+			{
+				orderDirection = "DESC";
+			}
+			/*
+			if (!string.IsNullOrEmpty(search))
+			{
+				var bugs = await _context.Bug
+					.Where(x => x.Title.Contains(search) || x.Body.Contains(search) || x.UserName.Contains(search));
+			}
+			*/
+
 			var bugs = await _context.Bug
-					.FromSqlRaw<Bug>($"SELECT * FROM Bug WHERE ParentProjectId={id} ORDER BY {orderBy} {order};")
-					.ToListAsync();
+			.FromSqlRaw<Bug>($"SELECT * FROM Bug WHERE ParentProjectId={id} ORDER BY {orderByColumn} {orderDirection} OFFSET {page * ticketsPerPage} ROWS FETCH NEXT {ticketsPerPage} ROWS ONLY;")
+			.ToListAsync();
+
+			// AND Title LIKE '%{search}%' OR Status LIKE ...
+			// TO DO: change to parameterized query to prevent sql injection thru search field
+
+			var totalTicketsInQuery = await _context.Bug
+				.Where(x => x.ParentProjectId == id)
+				.CountAsync();
 
 			ProjectBugsViewModel vm = new ProjectBugsViewModel
 			{
 				Project = project,
 				Bugs = bugs,
-				order = order,
-				orderBy = orderBy
+				totalTicketsInQuery = totalTicketsInQuery,
+				orderByColumn = orderByColumn,
+				orderDirection = orderDirection,
+				ticketsPerPage = ticketsPerPage,
+				page = page,
+				search = search
 			};
 
 			return View(vm);
 		}
 
-		/*
-		 *
-		 * Below are actions for admins only. (Creating, editing, removing projects.)
-		 *
-		 */
-
-		// I might remove this one. It will not be useful unless I add more properties to Project.
+		// Currently, no link points to this, and all project details are displayed on the Index page.
 		// GET: Projects/Details/5
-		[Authorize]
+		[Authorize(Roles = "Administrator, Project Manager")]
 		public async Task<IActionResult> Details(int? id)
 		{
 			if (id == null)
@@ -110,20 +125,24 @@ namespace BugTracker.Controllers
 		}
 
 		// GET: Projects/Create
-		[Authorize]
+		[Authorize(Roles = "Administrator, Project Manager")]
 		public IActionResult Create()
 		{
 			return View();
 		}
 
 		// POST: Projects/Create
-		[Authorize]
+		[Authorize(Roles = "Administrator, Project Manager")]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
 		{
 			if (ModelState.IsValid)
 			{
+				// add the user ID of the project creator
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				project.PMId = userId;
+
 				_context.Add(project);
 				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
@@ -131,8 +150,8 @@ namespace BugTracker.Controllers
 			return View(project);
 		}
 
-		[Authorize]
 		// GET: Projects/Edit/5
+		[Authorize(Roles = "Administrator, Project Manager")]
 		public async Task<IActionResult> Edit(int? id)
 		{
 			if (id == null)
@@ -145,11 +164,22 @@ namespace BugTracker.Controllers
 			{
 				return NotFound();
 			}
+
+			// Authorize PM to edit this project
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.PMId)
+				{
+					return Unauthorized();
+				}
+			}
+
 			return View(project);
 		}
 
 		// POST: Projects/Edit/5
-		[Authorize]
+		[Authorize(Roles = "Administrator, Project Manager")]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Project project)
@@ -179,11 +209,21 @@ namespace BugTracker.Controllers
 				}
 				return RedirectToAction(nameof(Index));
 			}
+
+			// Authorize PM to edit this project
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.PMId)
+				{
+					return Unauthorized();
+				}
+			}
 			return View(project);
 		}
 
 		// GET: Projects/Delete/5
-		[Authorize]
+		[Authorize(Roles = "Administrator, Project Manager")]
 		public async Task<IActionResult> Delete(int? id)
 		{
 			if (id == null)
@@ -198,16 +238,37 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
+			// Authorize PM to edit this project
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.PMId)
+				{
+					return Unauthorized();
+				}
+			}
+
 			return View(project);
 		}
 
 		// POST: Projects/Delete/5
-		[Authorize]
+		[Authorize(Roles = "Administrator, Project Manager")]
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> DeleteConfirmed(int id)
 		{
 			var project = await _context.Project.FindAsync(id);
+
+			// Authorize PM to edit this project
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.PMId)
+				{
+					return Unauthorized();
+				}
+			}
+
 			_context.Project.Remove(project);
 			await _context.SaveChangesAsync();
 			return RedirectToAction(nameof(Index));

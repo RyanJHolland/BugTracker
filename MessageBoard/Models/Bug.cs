@@ -49,8 +49,7 @@ namespace BugTracker.Models
 			Bug,
 			Feature,
 			Style,
-			Change,
-			Other
+			Change
 		}
 
 		public StatusEnum Status { get; set; }

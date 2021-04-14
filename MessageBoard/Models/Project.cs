@@ -13,8 +13,10 @@ namespace BugTracker.Models
 		[MaxLength(1000)]
 		public string Description { get; set; }
 
-		/*
+		[Display(Name = "Project Manager Id")]
+		public string PMId { get; set; }
 
+		/*
     [Display(Name = "Comment Count")]
     public int CommentCount { get; set; }
 
@@ -27,7 +29,7 @@ namespace BugTracker.Models
      * But what if someone edits the bug title after it is added to this Project table?
 
     [Display(Name = "Bug Count")]
-    public int BugCount { get; set; }
+    public int totalTicketsInQuery { get; set; }
 
     [Display(Name = "Newest Bug Time")]
     public DateTime NewestBugTime { get; set; }

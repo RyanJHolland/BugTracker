@@ -1,0 +1,36 @@
+﻿@{
+	ViewData["Title"] = "Bug Tracker";
+	Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<meta name="google" content="notranslate">
+	<meta http-equiv="Content-Language" content="en">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"]</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body>
+	<main class="landing-page text-white d-flex">
+			<h1 class="">
+				BugTracker
+			</h1>
+			<img src="~/img/bug_icon.png" alt="Bug icon" class="" />
+			Connect developers, users, and project managers.
+			<br />
+			Track projects with bug and feature request tickets.
+			<br />
+			<br />
+			<button class="btn cta" asp-area="" asp-controller="Home" asp-action="Index" style="color:white">
+				Set Up Account
+			</button>
+			<a asp-area="" asp-controller="Home" asp-action="Index" style="color:white">
+				Log In
+			</a>
+	</main>
+</body>
+</html>

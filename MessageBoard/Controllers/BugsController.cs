@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace BugTracker.Controllers
 {
+	#region Construction
+
 	public class BugsController : Controller
 	{
 		private readonly ApplicationDbContext _context;
@@ -22,11 +24,14 @@ namespace BugTracker.Controllers
 			_context = context;
 		}
 
+		#endregion Construction
+
 		/*
 		 * GET: Bugs/View/5
 		 * This is where a user reads a bug after clicking on it.
 		*/
 
+		[Authorize]
 		public async Task<IActionResult> View(int id)
 		{
 			var bug = await _context.Bug
@@ -111,7 +116,7 @@ namespace BugTracker.Controllers
 		}
 
 		// GET: Bugs/Edit/5
-		[Authorize]
+		[Authorize(Roles = "Administrator, Project Manager, Developer")]
 		public async Task<IActionResult> Edit(int? id)
 		{
 			if (id == null)
@@ -143,9 +148,9 @@ namespace BugTracker.Controllers
 		}
 
 		// POST: Bugs/Edit/5
-		[Authorize]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Administrator, Project Manager, Developer")]
 		public async Task<IActionResult> Edit(int id, [Bind("Title,Body,Priority,Category,Status")] Bug bug)
 		{
 			if (ModelState.IsValid)
@@ -183,7 +188,7 @@ namespace BugTracker.Controllers
 		}
 
 		// GET: Bugs/Delete/5
-		[Authorize]
+		[Authorize(Roles = "Administrator, Project Manager, Developer")]
 		public async Task<IActionResult> Delete(int? id)
 		{
 			if (id == null)
@@ -215,9 +220,9 @@ namespace BugTracker.Controllers
 		}
 
 		// POST: Delete Bug
-		[Authorize]
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Administrator, Project Manager, Developer")]
 		public async Task<IActionResult> DeleteConfirmed(int? id)
 		{
 			if (id == null)

@@ -1,4 +1,4 @@
-using BugTracker.Data;
+﻿using BugTracker.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,6 +23,8 @@ namespace BugTracker
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddHttpContextAccessor();
+
 			services.AddMvc(o =>
 			{
 				var policy = new AuthorizationPolicyBuilder()
@@ -38,6 +40,7 @@ namespace BugTracker
 			services.AddDatabaseDeveloperPageExceptionFilter();
 
 			services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+				.AddRoles<IdentityRole>()
 					.AddEntityFrameworkStores<ApplicationDbContext>();
 
 			services.AddControllersWithViews();
@@ -67,6 +70,7 @@ namespace BugTracker
 
 			app.UseEndpoints(endpoints =>
 			{
+				endpoints.MapAreaControllerRoute(null, "Accounts", "Accounts/{controller=Home}/{action=Index}/{id?}");
 				endpoints.MapControllerRoute(
 									name: "default",
 									pattern: "{controller=Home}/{action=Index}/{id?}");

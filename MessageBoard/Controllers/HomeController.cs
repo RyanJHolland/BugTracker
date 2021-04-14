@@ -1,4 +1,5 @@
 ﻿using BugTracker.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -14,10 +15,16 @@ namespace BugTracker.Controllers
 			_logger = logger;
 		}
 
-		// The root URL just redirects to the page showing the list of projects.
 		// GET: /
 		// GET: /Index
 		public IActionResult Index()
+		{
+			return View();
+		}
+
+		// GET: /Landing
+		[AllowAnonymous]
+		public IActionResult Landing()
 		{
 			return View();
 		}
