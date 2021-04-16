@@ -13,7 +13,7 @@ namespace BugTracker.Models
 		[MaxLength(1000)]
 		public string Description { get; set; }
 
-		[Display(Name = "Project Manager Id")]
+		[Display(Name = "Project Manager")]
 		public string PMId { get; set; }
 
 		/*

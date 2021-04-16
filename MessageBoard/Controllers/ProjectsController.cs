@@ -3,8 +3,10 @@ using BugTracker.Models;
 using BugTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,11 +19,13 @@ namespace BugTracker.Controllers
 
 		private readonly ApplicationDbContext _context;
 		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly UserManager<IdentityUser> _userManager;
 
-		public ProjectsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+		public ProjectsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager)
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_context = context;
+			_userManager = userManager;
 		}
 
 		#endregion Constructor
@@ -104,26 +108,6 @@ namespace BugTracker.Controllers
 			return View(vm);
 		}
 
-		// Currently, no link points to this, and all project details are displayed on the Index page.
-		// GET: Projects/Details/5
-		[Authorize(Roles = "Administrator, Project Manager")]
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
-
-			var project = await _context.Project
-					.FirstOrDefaultAsync(m => m.Id == id);
-			if (project == null)
-			{
-				return NotFound();
-			}
-
-			return View(project);
-		}
-
 		// GET: Projects/Create
 		[Authorize(Roles = "Administrator, Project Manager")]
 		public IActionResult Create()
@@ -165,7 +149,7 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			// Authorize PM to edit this project
+			// Authorize PM to edit this project:
 			if (!User.IsInRole("Administrator"))
 			{
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -175,18 +159,75 @@ namespace BugTracker.Controllers
 				}
 			}
 
-			return View(project);
+			// get current Project Manager's username:
+			string currentPMUserName = "";
+			try
+			{
+				currentPMUserName = _context.Users
+				.FindAsync(project.PMId)
+				.Result.UserName;
+			}
+			catch
+			{
+				currentPMUserName = "unassigned";
+			}
+
+			// get list of all possible alternative Project Managers' usernames:
+			List<string> possiblePMUserNames = new List<string>();
+			var PMs = await _userManager.GetUsersInRoleAsync("Project Manager");
+			var admins = await _userManager.GetUsersInRoleAsync("Administrator");
+			PMs.ToList().ForEach(u => possiblePMUserNames.Add(u.UserName));
+			admins.ToList().ForEach(u => possiblePMUserNames.Add(u.UserName));
+			possiblePMUserNames.Remove(currentPMUserName);
+
+			ProjectEditViewModel vm = new ProjectEditViewModel
+			{
+				Project = project,
+				PossiblePMUserNames = possiblePMUserNames,
+				CurrentPMUserName = currentPMUserName ?? "unassigned"
+			};
+			return View(vm);
 		}
 
 		// POST: Projects/Edit/5
 		[Authorize(Roles = "Administrator, Project Manager")]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Project project)
+		public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Description, CurrentPMUserName")] Project project, string CurrentPMUserName)
 		{
 			if (id != project.Id)
 			{
 				return NotFound();
+			}
+
+			try
+			{
+				// Get the User ID of the newly chosen PM from their username
+				string PMId = (await _userManager.FindByNameAsync(CurrentPMUserName)).Id;
+				if (PMId == null)
+				{
+					return BadRequest();
+				}
+
+				// and validate their role is at least PM
+				List<string> possiblePMUserNames = new List<string>();
+				var PMs = await _userManager.GetUsersInRoleAsync("Project Manager");
+				var admins = await _userManager.GetUsersInRoleAsync("Administrator");
+				PMs.ToList().ForEach(u => possiblePMUserNames.Add(u.UserName));
+				admins.ToList().ForEach(u => possiblePMUserNames.Add(u.UserName));
+				if (!possiblePMUserNames.Contains(CurrentPMUserName))
+				{
+					return BadRequest();
+				}
+				else
+				{
+					// save them as PM
+					project.PMId = PMId;
+				}
+			}
+			catch
+			{
+				return BadRequest();
 			}
 
 			if (ModelState.IsValid)

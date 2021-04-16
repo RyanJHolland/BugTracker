@@ -3,10 +3,13 @@ using BugTracker.Data;
 using BugTracker.Models;
 using BugTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // To-Do: Change the URL scheme to be something like Projects/View/#/Bugs/View/#
@@ -18,10 +21,14 @@ namespace BugTracker.Controllers
 	public class BugsController : Controller
 	{
 		private readonly ApplicationDbContext _context;
+		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly UserManager<IdentityUser> _userManager;
 
-		public BugsController(ApplicationDbContext context)
+		public BugsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager)
 		{
+			_httpContextAccessor = httpContextAccessor;
 			_context = context;
+			_userManager = userManager;
 		}
 
 		#endregion Construction
@@ -131,6 +138,16 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
+			// Authorize
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != bug.UserId)
+				{
+					return Unauthorized();
+				}
+			}
+
 			var project = await _context.Project
 				 .FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
 			if (project == null)
@@ -163,6 +180,17 @@ namespace BugTracker.Controllers
 					{
 						return NotFound();
 					}
+
+					// Authorize
+					if (!User.IsInRole("Administrator"))
+					{
+						var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+						if (userId != bug.UserId)
+						{
+							return Unauthorized();
+						}
+					}
+
 					bugToUpdate.Title = bug.Title;
 					bugToUpdate.Body = bug.Body;
 					bugToUpdate.Priority = bug.Priority;
@@ -203,6 +231,16 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
+			// Authorize
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != bug.UserId)
+				{
+					return Unauthorized();
+				}
+			}
+
 			var project = await _context.Project
 				 .FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
 			if (project == null)
@@ -230,6 +268,18 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 			var bug = await _context.Bug.FindAsync(id);
+
+
+			// Authorize
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != bug.UserId)
+				{
+					return Unauthorized();
+				}
+			}
+
 			int projectId = bug.ParentProjectId;
 
 			_context.Bug.Remove(bug);
