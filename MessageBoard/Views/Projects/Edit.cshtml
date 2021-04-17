@@ -26,16 +26,16 @@
 
 			<!-- Project Owner selection dropdown -->
 			<div class="form-group">
-				<label asp-for="Project.PMId" class="control-label"></label>
-				<select name="CurrentPMUserName">
-					@* default value is current PM name *@
-					<option value="@Model.CurrentPMUserName">@Model.CurrentPMUserName</option>
-					@foreach (var u in Model.PossiblePMUserNames)
+				<label asp-for="Project.ProjectOwnerId" class="control-label"></label>
+				<select name="ProjectOwnerUserName">
+					@* default value: current owner name *@
+					<option value="@Model.Project.ProjectOwnerUserName">@Model.Project.ProjectOwnerUserName</option>
+					@foreach (var u in Model.PossibleProjectOwnerUserNames)
 					{
 						<html><option value="@u.ToString()">@u.ToString()</option></html>
 					}
 				</select>
-				<span asp-validation-for="Project.PMId" class="text-danger"></span>
+				<span asp-validation-for="Project.ProjectOwnerUserName" class="text-danger"></span>
 			</div>
 
 			<!-- Buttons -->

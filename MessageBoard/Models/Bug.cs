@@ -17,10 +17,10 @@ namespace BugTracker.Models
 		[Display(Name = "Details")]
 		public string Body { get; set; }
 
-		[Display(Name = "User Id")]
+		[Display(Name = "Owner Id")]
 		public string UserId { get; set; }
 
-		[Display(Name = "Owner")]
+		[Display(Name = "Owner UserName")]
 		public string UserName { get; set; }
 
 		[Display(Name = "Created")]

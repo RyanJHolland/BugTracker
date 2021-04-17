@@ -148,6 +148,9 @@ namespace BugTracker.Controllers
 				}
 			}
 
+
+
+
 			var project = await _context.Project
 				 .FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
 			if (project == null)
@@ -159,6 +162,9 @@ namespace BugTracker.Controllers
 			{
 				Project = project,
 				Bug = bug
+				/*,
+				OwnerId = ownerId,
+				OwnerUserName = ownerUserName*/
 			};
 
 			return View(vm);

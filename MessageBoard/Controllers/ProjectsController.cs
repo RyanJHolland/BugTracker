@@ -123,12 +123,16 @@ namespace BugTracker.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				// add the user ID of the project creator
+				// add the user ID and name of the creator
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				project.PMId = userId;
+				project.ProjectOwnerId = userId;
+				project.ProjectOwnerUserName = User.Identity.Name;
 
+				// create project
 				_context.Add(project);
 				await _context.SaveChangesAsync();
+
+				// return view
 				return RedirectToAction(nameof(Index));
 			}
 			return View(project);
@@ -138,53 +142,67 @@ namespace BugTracker.Controllers
 		[Authorize(Roles = "Administrator, Project Manager")]
 		public async Task<IActionResult> Edit(int? id)
 		{
+			// check that project exists
 			if (id == null)
 			{
 				return NotFound();
 			}
-
 			var project = await _context.Project.FindAsync(id);
 			if (project == null)
 			{
 				return NotFound();
 			}
 
-			// Authorize PM to edit this project:
+			// Authorize user to edit this project
 			if (!User.IsInRole("Administrator"))
 			{
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != project.PMId)
+				if (userId != project.ProjectOwnerId)
 				{
 					return Unauthorized();
 				}
 			}
 
-			// get current Project Manager's username:
-			string currentPMUserName = "";
-			try
+			// fix any null data
+			if (project.ProjectOwnerUserName == null)
 			{
-				currentPMUserName = _context.Users
-				.FindAsync(project.PMId)
-				.Result.UserName;
+				project.ProjectOwnerUserName = "unassigned";
 			}
-			catch
+			if (project.ProjectOwnerId == null)
 			{
-				currentPMUserName = "unassigned";
+				project.ProjectOwnerId = "unassigned";
 			}
 
-			// get list of all possible alternative Project Managers' usernames:
-			List<string> possiblePMUserNames = new List<string>();
+			/*
+			// get current project owner's username
+			if (project.ProjectOwnerUserName == null)
+			{
+				string currentProjectOwnerUserName = "";
+				try
+				{
+					currentProjectOwnerUserName = _context.Users
+					.FindAsync(project.ProjectOwnerId)
+					.Result.UserName;
+				}
+				catch
+				{
+					currentProjectOwnerUserName = "unassigned";
+				}
+			}
+			*/
+
+			// populate a list of all possible alternative Project Managers' usernames, for the dropdown box
+			List<string> possibleProjectOwnerUserNames = new List<string>();
 			var PMs = await _userManager.GetUsersInRoleAsync("Project Manager");
 			var admins = await _userManager.GetUsersInRoleAsync("Administrator");
-			PMs.ToList().ForEach(u => possiblePMUserNames.Add(u.UserName));
-			admins.ToList().ForEach(u => possiblePMUserNames.Add(u.UserName));
-			possiblePMUserNames.Remove(currentPMUserName);
+			PMs.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
+			admins.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
+			possibleProjectOwnerUserNames.Remove(project.ProjectOwnerUserName);
 
 			ProjectEditViewModel vm = new ProjectEditViewModel
 			{
 				Project = project,
-				PossiblePMUserNames = possiblePMUserNames,
-				CurrentPMUserName = currentPMUserName ?? "unassigned"
+				PossibleProjectOwnerUserNames = possibleProjectOwnerUserNames
 			};
 			return View(vm);
 		}
@@ -193,7 +211,7 @@ namespace BugTracker.Controllers
 		[Authorize(Roles = "Administrator, Project Manager")]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Description, CurrentPMUserName")] Project project, string CurrentPMUserName)
+		public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Description, ProjectOwnerUserName")] Project project, string ProjectOwnerUserName)
 		{
 			if (id != project.Id)
 			{
@@ -203,26 +221,27 @@ namespace BugTracker.Controllers
 			try
 			{
 				// Get the User ID of the newly chosen PM from their username
-				string PMId = (await _userManager.FindByNameAsync(CurrentPMUserName)).Id;
-				if (PMId == null)
+				string ProjectOwnerId = (await _userManager.FindByNameAsync(ProjectOwnerUserName)).Id;
+				if (ProjectOwnerId == null)
 				{
 					return BadRequest();
 				}
 
 				// and validate their role is at least PM
-				List<string> possiblePMUserNames = new List<string>();
+				List<string> possibleProjectOwnerUserNames = new List<string>();
 				var PMs = await _userManager.GetUsersInRoleAsync("Project Manager");
 				var admins = await _userManager.GetUsersInRoleAsync("Administrator");
-				PMs.ToList().ForEach(u => possiblePMUserNames.Add(u.UserName));
-				admins.ToList().ForEach(u => possiblePMUserNames.Add(u.UserName));
-				if (!possiblePMUserNames.Contains(CurrentPMUserName))
+				PMs.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
+				admins.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
+				if (!possibleProjectOwnerUserNames.Contains(ProjectOwnerUserName))
 				{
 					return BadRequest();
 				}
 				else
 				{
 					// save them as PM
-					project.PMId = PMId;
+					project.ProjectOwnerUserName = ProjectOwnerUserName;
+					project.ProjectOwnerId = ProjectOwnerId;
 				}
 			}
 			catch
@@ -255,7 +274,7 @@ namespace BugTracker.Controllers
 			if (!User.IsInRole("Administrator"))
 			{
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != project.PMId)
+				if (userId != project.ProjectOwnerId)
 				{
 					return Unauthorized();
 				}
@@ -283,7 +302,7 @@ namespace BugTracker.Controllers
 			if (!User.IsInRole("Administrator"))
 			{
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != project.PMId)
+				if (userId != project.ProjectOwnerId)
 				{
 					return Unauthorized();
 				}
@@ -304,7 +323,7 @@ namespace BugTracker.Controllers
 			if (!User.IsInRole("Administrator"))
 			{
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != project.PMId)
+				if (userId != project.ProjectOwnerId)
 				{
 					return Unauthorized();
 				}
