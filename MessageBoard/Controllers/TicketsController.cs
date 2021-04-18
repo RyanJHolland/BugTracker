@@ -1,8 +1,4 @@
-﻿using BugTracker.Common;
-using BugTracker.Data;
-using BugTracker.Models;
-using BugTracker.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +7,24 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TicketTracker.Common;
+using TicketTracker.Data;
+using TicketTracker.Models;
+using TicketTracker.ViewModels;
 
-// To-Do: Change the URL scheme to be something like Projects/View/#/Bugs/View/#
+// To-Do: Change the URL scheme to be something like Projects/View/#/Tickets/View/#
 
-namespace BugTracker.Controllers
+namespace TicketTracker.Controllers
 {
 	#region Construction
 
-	public class BugsController : Controller
+	public class TicketsController : Controller
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly UserManager<IdentityUser> _userManager;
 
-		public BugsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager)
+		public TicketsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager)
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_context = context;
@@ -34,42 +34,42 @@ namespace BugTracker.Controllers
 		#endregion Construction
 
 		/*
-		 * GET: Bugs/View/5
-		 * This is where a user reads a bug after clicking on it.
+		 * GET: Tickets/View/5
+		 * This is where a user reads a ticket after clicking on it.
 		*/
 
 		[Authorize]
 		public async Task<IActionResult> View(int id)
 		{
-			var bug = await _context.Bug
+			var ticket = await _context.Ticket
 					.FirstOrDefaultAsync(m => m.Id == id);
-			if (bug == null)
+			if (ticket == null)
 			{
 				return NotFound();
 			}
 
 			var project = await _context.Project
-				 .FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
+				 .FirstOrDefaultAsync(m => m.Id == ticket.ParentProjectId);
 			if (project == null)
 			{
 				return NotFound();
 			}
 
 			var comments = await _context.Comment
-					.FromSqlRaw<Comment>($"SELECT * FROM Comment WHERE ParentBugId={id} ORDER BY CreationTime ASC;")
+					.FromSqlRaw<Comment>($"SELECT * FROM Comment WHERE ParentTicketId={id} ORDER BY CreationTime ASC;")
 					.ToListAsync();
 
-			ProjectBugCommentsViewModel vm = new ProjectBugCommentsViewModel
+			ProjectTicketCommentsViewModel vm = new ProjectTicketCommentsViewModel
 			{
 				Project = project,
-				Bug = bug,
+				Ticket = ticket,
 				Comments = comments
 			};
 
 			return View(vm);
 		}
 
-		// GET: Bugs/Create/5
+		// GET: Tickets/Create/5
 		[Authorize]
 		public async Task<IActionResult> Create(int id)
 		{
@@ -80,25 +80,25 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			var bug = new Bug();
+			var ticket = new Ticket();
 
-			ProjectBugViewModel vm = new()
+			ProjectTicketViewModel vm = new()
 			{
 				Project = project,
-				Bug = bug
+				Ticket = ticket
 			};
-			vm.Bug.Priority = Bug.PriorityEnum.Medium;
-			vm.Bug.Category = Bug.CategoryEnum.Bug;
-			vm.Bug.Status = Bug.StatusEnum.Open;
+			vm.Ticket.Priority = Ticket.PriorityEnum.Medium;
+			vm.Ticket.Category = Ticket.CategoryEnum.Bug;
+			vm.Ticket.Status = Ticket.StatusEnum.Open;
 
 			return View(vm);
 		}
 
-		// POST: Bugs/Create/5
+		// POST: Tickets/Create/5
 		[Authorize]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Title,Body,Priority,Category,Status")] Bug bug, int id)
+		public async Task<IActionResult> Create([Bind("Title,Body,Priority,Category,Status")] Ticket ticket, int id)
 		{
 			int projectId = id; // This is just to clarify the following code.
 			if (ModelState.IsValid)
@@ -110,19 +110,19 @@ namespace BugTracker.Controllers
 					return NotFound();
 				}
 
-				bug.ParentProjectId = projectId;
-				bug.UserId = User.GetUserId();
-				bug.UserName = User.Identity.Name;
-				bug.CreationTime = DateTime.UtcNow;
+				ticket.ParentProjectId = projectId;
+				ticket.UserId = User.GetUserId();
+				ticket.UserName = User.Identity.Name;
+				ticket.CreationTime = DateTime.UtcNow;
 
-				_context.Add(bug);
+				_context.Add(ticket);
 				await _context.SaveChangesAsync();
-				return Redirect($"~/Bugs/View/{bug.Id}");
+				return Redirect($"~/Tickets/View/{ticket.Id}");
 			}
-			return Redirect($"~/Bugs/Create/{projectId}");
+			return Redirect($"~/Tickets/Create/{projectId}");
 		}
 
-		// GET: Bugs/Edit/5
+		// GET: Tickets/Edit/5
 		[Authorize(Roles = "Administrator, Project Manager, Developer")]
 		public async Task<IActionResult> Edit(int? id)
 		{
@@ -131,9 +131,9 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			var bug = await _context.Bug
+			var ticket = await _context.Ticket
 					.FirstOrDefaultAsync(m => m.Id == id);
-			if (bug == null)
+			if (ticket == null)
 			{
 				return NotFound();
 			}
@@ -142,47 +142,41 @@ namespace BugTracker.Controllers
 			if (!User.IsInRole("Administrator"))
 			{
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != bug.UserId)
+				if (userId != ticket.UserId)
 				{
 					return Unauthorized();
 				}
 			}
 
-
-
-
 			var project = await _context.Project
-				 .FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
+				 .FirstOrDefaultAsync(m => m.Id == ticket.ParentProjectId);
 			if (project == null)
 			{
 				return NotFound();
 			}
 
-			ProjectBugViewModel vm = new()
+			ProjectTicketViewModel vm = new()
 			{
 				Project = project,
-				Bug = bug
-				/*,
-				OwnerId = ownerId,
-				OwnerUserName = ownerUserName*/
+				Ticket = ticket
 			};
 
 			return View(vm);
 		}
 
-		// POST: Bugs/Edit/5
+		// POST: Tickets/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Authorize(Roles = "Administrator, Project Manager, Developer")]
-		public async Task<IActionResult> Edit(int id, [Bind("Title,Body,Priority,Category,Status")] Bug bug)
+		public async Task<IActionResult> Edit(int id, [Bind("Title,Body,Priority,Category,Status")] Ticket ticket)
 		{
 			if (ModelState.IsValid)
 			{
 				try
 				{
-					var bugToUpdate = await _context.Bug
+					var ticketToUpdate = await _context.Ticket
 					 .FirstOrDefaultAsync(m => m.Id == id);
-					if (bugToUpdate == null)
+					if (ticketToUpdate == null)
 					{
 						return NotFound();
 					}
@@ -191,24 +185,24 @@ namespace BugTracker.Controllers
 					if (!User.IsInRole("Administrator"))
 					{
 						var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-						if (userId != bug.UserId)
+						if (userId != ticket.UserId)
 						{
 							return Unauthorized();
 						}
 					}
 
-					bugToUpdate.Title = bug.Title;
-					bugToUpdate.Body = bug.Body;
-					bugToUpdate.Priority = bug.Priority;
-					bugToUpdate.Category = bug.Category;
-					bugToUpdate.Status = bug.Status;
+					ticketToUpdate.Title = ticket.Title;
+					ticketToUpdate.Body = ticket.Body;
+					ticketToUpdate.Priority = ticket.Priority;
+					ticketToUpdate.Category = ticket.Category;
+					ticketToUpdate.Status = ticket.Status;
 
-					_context.Update(bugToUpdate);
+					_context.Update(ticketToUpdate);
 					await _context.SaveChangesAsync();
 				}
 				catch (DbUpdateConcurrencyException)
 				{
-					if (!BugExists(id))
+					if (!TicketExists(id))
 					{
 						return NotFound();
 					}
@@ -218,10 +212,10 @@ namespace BugTracker.Controllers
 					}
 				}
 			}
-			return Redirect($"~/Bugs/View/{id}");
+			return Redirect($"~/Tickets/View/{id}");
 		}
 
-		// GET: Bugs/Delete/5
+		// GET: Tickets/Delete/5
 		[Authorize(Roles = "Administrator, Project Manager, Developer")]
 		public async Task<IActionResult> Delete(int? id)
 		{
@@ -230,9 +224,9 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			var bug = await _context.Bug
+			var ticket = await _context.Ticket
 					.FirstOrDefaultAsync(m => m.Id == id);
-			if (bug == null)
+			if (ticket == null)
 			{
 				return NotFound();
 			}
@@ -241,29 +235,29 @@ namespace BugTracker.Controllers
 			if (!User.IsInRole("Administrator"))
 			{
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != bug.UserId)
+				if (userId != ticket.UserId)
 				{
 					return Unauthorized();
 				}
 			}
 
 			var project = await _context.Project
-				 .FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
+				 .FirstOrDefaultAsync(m => m.Id == ticket.ParentProjectId);
 			if (project == null)
 			{
 				return NotFound();
 			}
 
-			ProjectBugViewModel vm = new ProjectBugViewModel
+			ProjectTicketViewModel vm = new ProjectTicketViewModel
 			{
 				Project = project,
-				Bug = bug
+				Ticket = ticket
 			};
 
 			return View(vm);
 		}
 
-		// POST: Delete Bug
+		// POST: Delete Ticket
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
 		[Authorize(Roles = "Administrator, Project Manager, Developer")]
@@ -273,30 +267,30 @@ namespace BugTracker.Controllers
 			{
 				return NotFound();
 			}
-			var bug = await _context.Bug.FindAsync(id);
+			var ticket = await _context.Ticket.FindAsync(id);
 
 
 			// Authorize
 			if (!User.IsInRole("Administrator"))
 			{
 				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != bug.UserId)
+				if (userId != ticket.UserId)
 				{
 					return Unauthorized();
 				}
 			}
 
-			int projectId = bug.ParentProjectId;
+			int projectId = ticket.ParentProjectId;
 
-			_context.Bug.Remove(bug);
+			_context.Ticket.Remove(ticket);
 			await _context.SaveChangesAsync();
 
 			return Redirect($"~/Projects/View/{projectId}");
 		}
 
-		private bool BugExists(int id)
+		private bool TicketExists(int id)
 		{
-			return _context.Bug.Any(e => e.Id == id);
+			return _context.Ticket.Any(e => e.Id == id);
 		}
 	}
 }

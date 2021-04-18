@@ -1,15 +1,15 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BugTracker.Models
+namespace TicketTracker.Models
 {
-	public class Bug
+	public class Ticket
 	{
 		public int Id { get; set; }
 
 		[MinLength(1)]
 		[MaxLength(100)]
-		[Required(ErrorMessage = "Please enter a title for this bug.")]
+		[Required(ErrorMessage = "Please enter a title for this ticket.")]
 		[Display(Name = "Title")]
 		public string Title { get; set; }
 
@@ -71,7 +71,7 @@ namespace BugTracker.Models
 		/*
 		private readonly UserManager<IdentityUser> _userManager;
 
-		public Bug(UserManager<IdentityUser> userManager)
+		public Ticket(UserManager<IdentityUser> userManager)
 		{
 				_userManager = userManager;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace BugTracker.Areas.Accounts.Models.Roles
+namespace TicketTracker.Areas.Accounts.Models.Roles
 {
 	public class DeleteRequestModel
 	{

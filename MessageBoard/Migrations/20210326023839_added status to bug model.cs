@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BugTracker.Migrations
+namespace TicketTracker.Migrations
 {
 	public partial class addedstatustobugmodel : Migration
 	{

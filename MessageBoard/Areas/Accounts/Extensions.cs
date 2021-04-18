@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace BugTracker.Areas.Accounts
+namespace TicketTracker.Areas.Accounts
 {
 	public static class Extensions
 	{

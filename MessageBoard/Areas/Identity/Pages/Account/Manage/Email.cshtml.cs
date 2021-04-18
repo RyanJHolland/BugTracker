@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace BugTracker.Areas.Identity.Pages.Account.Manage
+namespace TicketTracker.Areas.Identity.Pages.Account.Manage
 {
     public partial class EmailModel : PageModel
     {

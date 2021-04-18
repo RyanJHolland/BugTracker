@@ -1,5 +1,5 @@
-﻿using BugTracker.Areas.Accounts.Models;
-using BugTracker.Areas.Accounts.Models.Roles;
+﻿using TicketTracker.Areas.Accounts.Models;
+using TicketTracker.Areas.Accounts.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BugTracker.Areas.Accounts.Controllers
+namespace TicketTracker.Areas.Accounts.Controllers
 {
 	[Authorize(Roles = "Administrator")]
 	public class RolesController : BaseController

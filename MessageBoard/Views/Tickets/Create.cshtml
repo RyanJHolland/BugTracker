@@ -1,0 +1,61 @@
+﻿@model TicketTracker.ViewModels.ProjectTicketViewModel
+
+@{ ViewData["Title"] = "New ticket"; }
+
+<!-- Title -->
+<h2 class="mb-header">
+	Create new ticket
+</h2>
+
+<!-- Form -->
+<form asp-action="Create" asp-route-ParentProjectId="@Model.Project.Id">
+	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+	<!-- Title input -->
+	<div class="form-group">
+		<label asp-for="Ticket.Title" class="control-label"></label>
+		<input asp-for="Ticket.Title" class="form-control" />
+		<span asp-validation-for="Ticket.Title" class="text-danger"></span>
+	</div>
+
+	<!-- Body input -->
+	<div class="form-group">
+		<label asp-for="Ticket.Body" class="control-label"></label>
+		<textarea asp-for="Ticket.Body" class="form-control" rows="10" cols="75"></textarea>
+		<span asp-validation-for="Ticket.Body" class="text-danger"></span>
+	</div>
+
+	<!-- Priority input -->
+	<div class="form-group">
+		<label asp-for="Ticket.Priority" class="control-label"></label>
+		@Html.DropDownListFor(
+						 m => m.Ticket.Priority,
+						 new SelectList(
+							 Enum.GetValues(typeof(Ticket.PriorityEnum))
+							 )
+						 )
+		<span asp-validation-for="Ticket.Priority" class="text-danger"></span>
+	</div>
+
+	<!-- Category input -->
+	<div class="form-group">
+		<label asp-for="Ticket.Category" class="control-label"></label>
+		@Html.DropDownListFor(m => m.Ticket.Category, new SelectList(Enum.GetValues(typeof(Ticket.CategoryEnum))))
+		<span asp-validation-for="Ticket.Category" class="text-danger"></span>
+	</div>
+
+	<!-- Buttons -->
+	<div class="form-group">
+
+		<!-- Submit button -->
+		<input type="submit" value="Create" class="btn btn-primary" />
+
+		<!-- Cancel button -->
+		<a asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">Cancel</a>
+	</div>
+</form>
+
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

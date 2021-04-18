@@ -1,4 +1,4 @@
-namespace BugTracker.Models
+namespace TicketTracker.Models
 {
 	public class ErrorViewModel
 	{

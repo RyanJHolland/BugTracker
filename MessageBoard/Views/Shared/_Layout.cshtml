@@ -5,7 +5,7 @@
 	<meta name="google" content="notranslate">
 	<meta http-equiv="Content-Language" content="en">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - Bug Tracker</title>
+	<title>@ViewData["Title"] - Ticket Tracker</title>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -17,9 +17,9 @@
 		<!-- nav bar -->
 		<nav class="navbar navbar-light navbar-expand-sm navbar-toggleable-sm navbar box-shadow mb-3">
 
-			<!-- bug icon (also Home link) -->
-			<a class="navbar-brand bug-icon" asp-area="" asp-controller="Home" asp-action="Index">
-				<img src="~/img/bug_icon.png" alt="bug icon" width="50px" />
+			<!-- ticket icon (also Home link) -->
+			<a class="navbar-brand ticket-icon" asp-area="" asp-controller="Home" asp-action="Index">
+				<img src="~/img/bug_icon.png" alt="ticket icon" width="50px" />
 			</a>
 
 			<!-- menu container -->
@@ -50,7 +50,7 @@
 						</li>
 
 						<!-- Project link -->
-						<!-- (If this is a bug or comment, this links to its project) -->
+						<!-- (If this is a ticket or comment, this links to its project) -->
 						@if (Model != null)
 						{
 							@if (Model.GetType().GetProperty("Project") != null)
@@ -66,12 +66,12 @@
 
 							<!-- Ticket link -->
 							<!-- (If this is a comment, this links to its ticket) -->
-							@if (Model.GetType().GetProperty("Bug") != null)
+							@if (Model.GetType().GetProperty("Ticket") != null)
 							{
 								<text>
 									<li class="nav-item">
-										<a class="nav-link" asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id">
-											@Model.Bug.Title
+										<a class="nav-link" asp-controller="Tickets" asp-action="View" asp-route-id="@Model.Ticket.Id">
+											@Model.Ticket.Title
 										</a>
 									</li>
 								</text>
@@ -98,7 +98,7 @@
 	<footer class="border-top footer text-muted">
 		<!--
 		<div class="container">
-				&copy; 2021 - BugTracker - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+				&copy; 2021 - TicketTracker - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
 		</div>
 		-->
 	</footer>

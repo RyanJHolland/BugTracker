@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace BugTracker.Areas.Identity.Pages.Account.Manage
+namespace TicketTracker.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {

@@ -1,9 +1,9 @@
-﻿using BugTracker.Areas.Accounts.Models.ViewComponents;
-using BugTracker.Data;
+﻿using TicketTracker.Areas.Accounts.Models.ViewComponents;
+using TicketTracker.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
-namespace BugTracker.Areas.Accounts.ViewComponents
+namespace TicketTracker.Areas.Accounts.ViewComponents
 {
 	public class AccountsNavBarViewComponent : ViewComponent
 	{

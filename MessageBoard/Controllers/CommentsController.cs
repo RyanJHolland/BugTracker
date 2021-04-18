@@ -1,21 +1,35 @@
-﻿using BugTracker.Common;
-using BugTracker.Data;
-using BugTracker.Models;
-using BugTracker.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using TicketTracker.Common;
+using TicketTracker.Data;
+using TicketTracker.Models;
+using TicketTracker.ViewModels;
 
-// To-Do: Change the URL scheme to be something like Projects/View/#/Comments/View/#
-
-namespace BugTracker.Controllers
+namespace TicketTracker.Controllers
 {
 	public class CommentsController : Controller
 	{
+		#region Construction
+
 		private readonly ApplicationDbContext _context;
+		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly UserManager<IdentityUser> _userManager;
+
+		public CommentsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager)
+		{
+			_httpContextAccessor = httpContextAccessor;
+			_context = context;
+			_userManager = userManager;
+		}
+
+		#endregion Construction
 
 		public CommentsController(ApplicationDbContext context)
 		{
@@ -37,24 +51,24 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			return Redirect($"~/Bugs/View/{comment.ParentBugId}?CommentId={id}");
+			return Redirect($"~/Tickets/View/{comment.ParentTicketId}?CommentId={id}");
 		}
 
-		// GET: Comments/Create/{bugId}
+		// GET: Comments/Create/{ticketId}
 		[Authorize]
 		public async Task<IActionResult> Create(int id)
 		{
-			int bugId = id; // This is just to clarify the following code.
+			int ticketId = id; // This is just to clarify the following code.
 
-			var bug = await _context.Bug
-					.FirstOrDefaultAsync(m => m.Id == bugId);
-			if (bug == null)
+			var ticket = await _context.Ticket
+					.FirstOrDefaultAsync(m => m.Id == ticketId);
+			if (ticket == null)
 			{
 				return NotFound();
 			}
 
 			var project = await _context.Project
-					.FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
+					.FirstOrDefaultAsync(m => m.Id == ticket.ParentProjectId);
 			if (project == null)
 			{
 				return NotFound();
@@ -62,49 +76,49 @@ namespace BugTracker.Controllers
 
 			var comment = new Comment();
 
-			ProjectBugCommentViewModel vm = new ProjectBugCommentViewModel
+			ProjectTicketCommentViewModel vm = new ProjectTicketCommentViewModel
 			{
 				Project = project,
-				Bug = bug,
+				Ticket = ticket,
 				Comment = comment
 			};
 
 			return View(vm);
 		}
 
-		// POST: Comments/Create/{bugId}
+		// POST: Comments/Create/{ticketId}
 		[Authorize]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create([Bind("Title,Body")] Comment comment, int id)
 		{
-			int bugId = id; // This is just to clarify the following code.
+			int ticketId = id; // This is just to clarify the following code.
 			if (ModelState.IsValid)
 			{
-				var bug = await _context.Bug
-					.FirstOrDefaultAsync(m => m.Id == bugId);
-				if (bug == null)
+				var ticket = await _context.Ticket
+					.FirstOrDefaultAsync(m => m.Id == ticketId);
+				if (ticket == null)
 				{
 					return NotFound();
 				}
 
 				var project = await _context.Project
-						.FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
+						.FirstOrDefaultAsync(m => m.Id == ticket.ParentProjectId);
 				if (project == null)
 				{
 					return NotFound();
 				}
 
-				comment.ParentBugId = bugId;
+				comment.ParentTicketId = ticketId;
 				comment.UserId = User.GetUserId();
 				comment.UserName = User.Identity.Name;
 				comment.CreationTime = DateTime.UtcNow;
 
 				_context.Add(comment);
 				await _context.SaveChangesAsync();
-				return Redirect($"~/Bugs/View/{bugId}?CommentId={comment.Id}");
+				return Redirect($"~/Tickets/View/{ticketId}?CommentId={comment.Id}");
 			}
-			return Redirect($"~/Bugs/View/{bugId}");
+			return Redirect($"~/Tickets/View/{ticketId}");
 		}
 
 		// GET: Comments/Edit/5
@@ -123,24 +137,34 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			var bug = await _context.Bug
-					.FirstOrDefaultAsync(m => m.Id == comment.ParentBugId);
-			if (bug == null)
+			// Authorize
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != comment.UserId)
+				{
+					return Unauthorized();
+				}
+			}
+
+			var ticket = await _context.Ticket
+					.FirstOrDefaultAsync(m => m.Id == comment.ParentTicketId);
+			if (ticket == null)
 			{
 				return NotFound();
 			}
 
 			var project = await _context.Project
-				 .FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
+				 .FirstOrDefaultAsync(m => m.Id == ticket.ParentProjectId);
 			if (project == null)
 			{
 				return NotFound();
 			}
 
-			ProjectBugCommentViewModel vm = new ProjectBugCommentViewModel
+			ProjectTicketCommentViewModel vm = new ProjectTicketCommentViewModel
 			{
 				Project = project,
-				Bug = bug,
+				Ticket = ticket,
 				Comment = comment
 			};
 
@@ -162,6 +186,16 @@ namespace BugTracker.Controllers
 					if (commentToUpdate == null)
 					{
 						return NotFound();
+					}
+
+					// Authorize
+					if (!User.IsInRole("Administrator"))
+					{
+						var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+						if (userId != comment.UserId)
+						{
+							return Unauthorized();
+						}
 					}
 
 					commentToUpdate.Body = comment.Body;
@@ -200,24 +234,34 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			var bug = await _context.Bug
-					.FirstOrDefaultAsync(m => m.Id == comment.ParentBugId);
-			if (bug == null)
+			// Authorize
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != comment.UserId)
+				{
+					return Unauthorized();
+				}
+			}
+
+			var ticket = await _context.Ticket
+					.FirstOrDefaultAsync(m => m.Id == comment.ParentTicketId);
+			if (ticket == null)
 			{
 				return NotFound();
 			}
 
 			var project = await _context.Project
-				 .FirstOrDefaultAsync(m => m.Id == bug.ParentProjectId);
+				 .FirstOrDefaultAsync(m => m.Id == ticket.ParentProjectId);
 			if (project == null)
 			{
 				return NotFound();
 			}
 
-			ProjectBugCommentViewModel vm = new ProjectBugCommentViewModel
+			ProjectTicketCommentViewModel vm = new ProjectTicketCommentViewModel
 			{
 				Project = project,
-				Bug = bug,
+				Ticket = ticket,
 				Comment = comment
 			};
 
@@ -234,57 +278,6 @@ namespace BugTracker.Controllers
 			{
 				return NotFound();
 			}
-			var comment = await _context.Comment.FindAsync(id);
-			var bug = await _context.Bug.FindAsync(comment.ParentBugId);
-
-			_context.Comment.Remove(comment);
-			await _context.SaveChangesAsync();
-
-			return Redirect($"~/Projects/View/{bug.ParentProjectId}");
-		}
-
-		private bool CommentExists(int id)
-		{
-			return _context.Comment.Any(e => e.Id == id);
-		}
-	}
-}
-
-/*
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using BugTracker.Data;
-using BugTracker.Models;
-
-namespace BugTracker.Controllers
-{
-	public class CommentsController : Controller
-	{
-		private readonly ApplicationDbContext _context;
-
-		public CommentsController(ApplicationDbContext context)
-		{
-			_context = context;
-		}
-
-		// GET: Comments
-		public async Task<IActionResult> Index()
-		{
-			return View(await _context.Comment.ToListAsync());
-		}
-
-		// GET: Comments/Details/5
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
 
 			var comment = await _context.Comment
 					.FirstOrDefaultAsync(m => m.Id == id);
@@ -293,109 +286,20 @@ namespace BugTracker.Controllers
 				return NotFound();
 			}
 
-			return View(comment);
-		}
-
-		// GET: Comments/Create
-		public IActionResult Create()
-		{
-			return View();
-		}
-
-		// POST: Comments/Create
-		// To protect from overcommenting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,Body,UserId,CreationTime")] Comment comment)
-		{
-			if (ModelState.IsValid)
+			// Authorize
+			if (!User.IsInRole("Administrator"))
 			{
-				_context.Add(comment);
-				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
-			}
-			return View(comment);
-		}
-
-		// GET: Comments/Edit/5
-		public async Task<IActionResult> Edit(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
-
-			var comment = await _context.Comment.FindAsync(id);
-			if (comment == null)
-			{
-				return NotFound();
-			}
-			return View(comment);
-		}
-
-		// POST: Comments/Edit/5
-		// To protect from overcommenting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,Body,UserId,CreationTime")] Comment comment)
-		{
-			if (id != comment.Id)
-			{
-				return NotFound();
-			}
-
-			if (ModelState.IsValid)
-			{
-				try
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != comment.UserId)
 				{
-					_context.Update(comment);
-					await _context.SaveChangesAsync();
+					return Unauthorized();
 				}
-				catch (DbUpdateConcurrencyException)
-				{
-					if (!CommentExists(comment.Id))
-					{
-						return NotFound();
-					}
-					else
-					{
-						throw;
-					}
-				}
-				return RedirectToAction(nameof(Index));
-			}
-			return View(comment);
-		}
-
-		// GET: Comments/Delete/5
-		public async Task<IActionResult> Delete(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
 			}
 
-			var comment = await _context.Comment
-					.FirstOrDefaultAsync(m => m.Id == id);
-			if (comment == null)
-			{
-				return NotFound();
-			}
-
-			return View(comment);
-		}
-
-		// POST: Comments/Delete/5
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed(int id)
-		{
-			var comment = await _context.Comment.FindAsync(id);
 			_context.Comment.Remove(comment);
 			await _context.SaveChangesAsync();
-			return RedirectToAction(nameof(Index));
+
+			return Redirect($"~/Tickets/View/{comment.ParentCommentId}");
 		}
 
 		private bool CommentExists(int id)
@@ -404,4 +308,3 @@ namespace BugTracker.Controllers
 		}
 	}
 }
-*/

@@ -1,9 +1,9 @@
-﻿@model BugTracker.ViewModels.ProjectBugCommentViewModel
+﻿@model TicketTracker.ViewModels.ProjectTicketCommentViewModel
 
-@{ ViewData["Title"] = "Comment to bug"; }
+@{ ViewData["Title"] = "Comment to ticket"; }
 
 <h2 class="mb-header">
-	Comment to bug
+	Comment to ticket
 </h2>
 
 <div class="row">
@@ -17,7 +17,7 @@
 			</div>
 			<div class="form-group">
 				<input type="submit" value="Create" class="btn btn-primary" />
-				<a asp-controller="Bugs" asp-action="View" asp-route-id="@Model.Bug.Id">Cancel</a>
+				<a asp-controller="Tickets" asp-action="View" asp-route-id="@Model.Ticket.Id">Cancel</a>
 			</div>
 		</form>
 	</div>

@@ -1,4 +1,4 @@
-﻿@model BugTracker.ViewModels.ProjectBugCommentViewModel
+﻿@model TicketTracker.ViewModels.ProjectTicketCommentViewModel
 
 @{ ViewData["Title"] = "Delete comment"; }
 
@@ -9,10 +9,10 @@
 </h3>
 <dl class="row">
 	<dt class="col-sm-2">
-		@Html.DisplayNameFor(model => model.Bug.Title)
+		@Html.DisplayNameFor(model => model.Ticket.Title)
 	</dt>
 	<dd class="col-sm-10">
-		@Html.DisplayFor(model => model.Bug.Title)
+		@Html.DisplayFor(model => model.Ticket.Title)
 	</dd>
 	<dt class="col-sm-2">
 		@Html.DisplayNameFor(model => model.Comment.Body)
@@ -37,7 +37,7 @@
 <form asp-action="Delete">
 	<input type="hidden" asp-for="Comment.Id" />
 	<input type="submit" value="Delete" class="btn btn-danger" />
-	<a asp-controller="Comments" asp-action="View" asp-route-id="@Model.Bug.Id">
+	<a asp-controller="Comments" asp-action="View" asp-route-id="@Model.Ticket.Id">
 		Cancel
 	</a>
 </form>

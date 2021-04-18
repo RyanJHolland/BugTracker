@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using BugTracker.Models;
+using TicketTracker.Models;
 
-namespace BugTracker.Data
+namespace TicketTracker.Data
 {
 	public class ApplicationDbContext : IdentityDbContext
 	{
@@ -11,9 +11,9 @@ namespace BugTracker.Data
 		{
 		}
 
-		public DbSet<BugTracker.Models.Project> Project { get; set; }
-		public DbSet<BugTracker.Models.Bug> Bug { get; set; }
-		public DbSet<BugTracker.Models.Comment> Comment { get; set; }
-		public DbSet<BugTracker.Models.Zug> Zug { get; set; }
+		public DbSet<TicketTracker.Models.Project> Project { get; set; }
+		public DbSet<TicketTracker.Models.Ticket> Ticket { get; set; }
+		public DbSet<TicketTracker.Models.Comment> Comment { get; set; }
+		public DbSet<TicketTracker.Models.Zug> Zug { get; set; }
 	}
 }

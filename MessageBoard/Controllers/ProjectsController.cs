@@ -1,7 +1,4 @@
-﻿using BugTracker.Data;
-using BugTracker.Models;
-using BugTracker.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TicketTracker.Data;
+using TicketTracker.Models;
+using TicketTracker.ViewModels;
 
-namespace BugTracker.Controllers
+namespace TicketTracker.Controllers
 {
 	public class ProjectsController : Controller
 	{
@@ -38,7 +38,7 @@ namespace BugTracker.Controllers
 		}
 
 		// GET: Projects/View/5
-		// Displays the most recent bugs on the chosen project. This is where a user browses a project's bugs.
+		// Displays the most recent tickets on the chosen project. This is where a user browses a project's tickets.
 		public async Task<IActionResult> View(
 			int? id,
 			string orderByColumn = "CreationTime",
@@ -61,7 +61,7 @@ namespace BugTracker.Controllers
 			}
 
 			// Validate that the sort order parameter is a valid column
-			var props = typeof(Bug).GetProperties()
+			var props = typeof(Ticket).GetProperties()
 				.Select(prop => prop.Name)
 				.ToArray();
 			if (!props.Contains(orderByColumn))
@@ -77,26 +77,26 @@ namespace BugTracker.Controllers
 			/*
 			if (!string.IsNullOrEmpty(search))
 			{
-				var bugs = await _context.Bug
+				var tickets = await _context.Ticket
 					.Where(x => x.Title.Contains(search) || x.Body.Contains(search) || x.UserName.Contains(search));
 			}
 			*/
 
-			var bugs = await _context.Bug
-			.FromSqlRaw<Bug>($"SELECT * FROM Bug WHERE ParentProjectId={id} ORDER BY {orderByColumn} {orderDirection} OFFSET {page * ticketsPerPage} ROWS FETCH NEXT {ticketsPerPage} ROWS ONLY;")
+			var tickets = await _context.Ticket
+			.FromSqlRaw<Ticket>($"SELECT * FROM Ticket WHERE ParentProjectId={id} ORDER BY {orderByColumn} {orderDirection} OFFSET {page * ticketsPerPage} ROWS FETCH NEXT {ticketsPerPage} ROWS ONLY;")
 			.ToListAsync();
 
 			// AND Title LIKE '%{search}%' OR Status LIKE ...
 			// TO DO: change to parameterized query to prevent sql injection thru search field
 
-			var totalTicketsInQuery = await _context.Bug
+			var totalTicketsInQuery = await _context.Ticket
 				.Where(x => x.ParentProjectId == id)
 				.CountAsync();
 
-			ProjectBugsViewModel vm = new ProjectBugsViewModel
+			ProjectTicketsViewModel vm = new ProjectTicketsViewModel
 			{
 				Project = project,
-				Bugs = bugs,
+				Tickets = tickets,
 				totalTicketsInQuery = totalTicketsInQuery,
 				orderByColumn = orderByColumn,
 				orderDirection = orderDirection,

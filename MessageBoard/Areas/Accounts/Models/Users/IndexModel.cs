@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace BugTracker.Areas.Accounts.Models.Users
+namespace TicketTracker.Areas.Accounts.Models.Users
 {
 	public class IndexModel
 	{

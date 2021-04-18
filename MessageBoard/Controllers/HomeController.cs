@@ -1,10 +1,10 @@
-﻿using BugTracker.Models;
+﻿using TicketTracker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace BugTracker.Controllers
+namespace TicketTracker.Controllers
 {
 	public class HomeController : Controller
 	{

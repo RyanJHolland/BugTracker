@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 
 // source: https://www.dxsdata.com/2017/03/asp-net-core-get-user-id/
-namespace BugTracker.Common
+namespace TicketTracker.Common
 {
 	public static class ExtensionMethods
 	{

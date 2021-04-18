@@ -1,7 +1,7 @@
-﻿using BugTracker.Data;
+﻿using TicketTracker.Data;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BugTracker.Areas.Accounts.Controllers
+namespace TicketTracker.Areas.Accounts.Controllers
 {
 	public class HomeController : BaseController
 	{

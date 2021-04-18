@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BugTracker.Models
+namespace TicketTracker.Models
 {
 	public class Comment
 	{
@@ -19,7 +19,7 @@ namespace BugTracker.Models
 		[Display(Name = "Creation Time")]
 		public DateTime CreationTime { get; set; }
 
-		public int ParentBugId { get; set; }
+		public int ParentTicketId { get; set; }
 
 		public int ParentCommentId { get; set; }
 	}

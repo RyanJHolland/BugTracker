@@ -1,6 +1,6 @@
-﻿using BugTracker.Areas.Accounts.Models;
-using BugTracker.Areas.Accounts.Models.Users;
-using BugTracker.Data;
+﻿using TicketTracker.Areas.Accounts.Models;
+using TicketTracker.Areas.Accounts.Models.Users;
+using TicketTracker.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BugTracker.Areas.Accounts.Controllers
+namespace TicketTracker.Areas.Accounts.Controllers
 {
 	public class UsersController : BaseController
 	{

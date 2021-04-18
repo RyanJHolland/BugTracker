@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BugTracker.Models
+namespace TicketTracker.Models
 {
 	public class Project
 	{
@@ -28,17 +28,17 @@ namespace BugTracker.Models
     */
 		/*
      * I'm not sure if I should query for these things whenever I load the page versus storing them here.
-     * Storing them when someone bugs seems more efficient.
-     * But what if someone edits the bug title after it is added to this Project table?
+     * Storing them when someone tickets seems more efficient.
+     * But what if someone edits the ticket title after it is added to this Project table?
 
-    [Display(Name = "Bug Count")]
+    [Display(Name = "Ticket Count")]
     public int totalTicketsInQuery { get; set; }
 
-    [Display(Name = "Newest Bug Time")]
-    public DateTime NewestBugTime { get; set; }
+    [Display(Name = "Newest Ticket Time")]
+    public DateTime NewestTicketTime { get; set; }
 
-    [Display(Name = "Newest Bug Title")]
-    public int NewestBugTitle { get; set; }
+    [Display(Name = "Newest Ticket Title")]
+    public int NewestTicketTitle { get; set; }
 
     [Display(Name = "Newest Comment Time")]
     public DateTime NewestCommentTime { get; set; }

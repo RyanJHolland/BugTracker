@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace BugTracker.Areas.Identity.Pages.Account.Manage
+namespace TicketTracker.Areas.Identity.Pages.Account.Manage
 {
     public class EnableAuthenticatorModel : PageModel
     {
@@ -148,7 +148,7 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
         {
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("BugTracker"),
+                _urlEncoder.Encode("TicketTracker"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

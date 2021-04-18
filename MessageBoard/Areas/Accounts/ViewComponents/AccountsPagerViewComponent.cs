@@ -1,8 +1,8 @@
-﻿using BugTracker.Areas.Accounts.Models;
-using BugTracker.Areas.Accounts.Models.ViewComponents;
+﻿using TicketTracker.Areas.Accounts.Models;
+using TicketTracker.Areas.Accounts.Models.ViewComponents;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BugTracker.Areas.Accounts.ViewComponents
+namespace TicketTracker.Areas.Accounts.ViewComponents
 {
 	public class AccountsPagerViewComponent : ViewComponent
 	{

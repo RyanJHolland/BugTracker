@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 
-namespace BugTracker.Areas.Accounts.Models.Users
+namespace TicketTracker.Areas.Accounts.Models.Users
 {
 	public class UpdateModel
 	{

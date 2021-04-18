@@ -1,12 +1,12 @@
-﻿using BugTracker.Models;
+﻿using TicketTracker.Models;
 using System.Collections.Generic;
 
-namespace BugTracker.ViewModels
+namespace TicketTracker.ViewModels
 {
-	public class ProjectBugsViewModel
+	public class ProjectTicketsViewModel
 	{
 		public Project Project { get; set; }
-		public List<Bug> Bugs { get; set; }
+		public List<Ticket> Tickets { get; set; }
 
 		public int totalTicketsInQuery { get; set; }
 

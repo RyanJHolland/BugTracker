@@ -1,8 +1,8 @@
-using BugTracker;
+using TicketTracker;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace BugTracker
+namespace TicketTracker
 {
 	public class Program
 	{

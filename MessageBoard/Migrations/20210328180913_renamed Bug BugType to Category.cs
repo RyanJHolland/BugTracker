@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BugTracker.Migrations
+namespace TicketTracker.Migrations
 {
     public partial class renamedBugBugTypetoCategory : Migration
     {

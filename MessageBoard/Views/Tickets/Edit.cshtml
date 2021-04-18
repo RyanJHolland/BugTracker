@@ -1,0 +1,77 @@
+﻿@model TicketTracker.ViewModels.ProjectTicketViewModel
+
+@{ ViewData["Title"] = "Edit ticket"; }
+
+<!-- Title -->
+<h2 class="mb-header">
+	@Model.Ticket.Title
+</h2>
+
+<!-- Form -->
+<div class="ticket-container">
+	<div class="row">
+		<div class="col">
+			<form asp-action="Edit" asp-route-id="@Model.Ticket.Id">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<input type="hidden" asp-for="Ticket.Id" />
+
+				<!-- Title input -->
+				<div class="form-group">
+					<label asp-for="Ticket.Title" class="control-label"></label>
+					<input asp-for="Ticket.Title" class="form-control" />
+					<span asp-validation-for="Ticket.Title" class="text-danger"></span>
+				</div>
+
+				<!-- Body input -->
+				<div class="form-group">
+					<label asp-for="Ticket.Body" class="control-label"></label>
+					<textarea asp-for="Ticket.Body" class="form-control" rows="10" cols="75"></textarea>
+					<span asp-validation-for="Ticket.Body" class="text-danger"></span>
+				</div>
+
+				<!-- Priority input -->
+				<div class="form-group">
+					<label asp-for="Ticket.Priority" class="control-label"></label>
+					@Html.DropDownListFor(
+							 m => m.Ticket.Priority,
+							 new SelectList(
+								 Enum.GetValues(typeof(Ticket.PriorityEnum))
+								 )
+							 )
+					<span asp-validation-for="Ticket.Priority" class="text-danger"></span>
+				</div>
+
+				<!-- Category input -->
+				<div class="form-group">
+					<label asp-for="Ticket.Category" class="control-label"></label>
+					@Html.DropDownListFor(m => m.Ticket.Category, new SelectList(Enum.GetValues(typeof(Ticket.CategoryEnum))))
+					<span asp-validation-for="Ticket.Category" class="text-danger"></span>
+				</div>
+
+				<!-- Status input -->
+				<div class="form-group">
+					<label asp-for="Ticket.Status" class="control-label"></label>
+					@Html.DropDownListFor(m => m.Ticket.Status, new SelectList(Enum.GetValues(typeof(Ticket.StatusEnum))))
+					<span asp-validation-for="Ticket.Status" class="text-danger"></span>
+				</div>
+
+				<!-- Buttons -->
+				<div class="form-group">
+
+					<!-- Submit button -->
+					<input type="submit" value="Save" class="btn btn-primary" />
+
+					<!-- Cancel button -->
+					<a asp-controller="Tickets" asp-action="View" asp-route-id="@Model.Ticket.Id">
+						Cancel
+					</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

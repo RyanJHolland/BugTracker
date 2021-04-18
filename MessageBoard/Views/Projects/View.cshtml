@@ -1,4 +1,4 @@
-﻿@model BugTracker.ViewModels.ProjectBugsViewModel
+﻿@model TicketTracker.ViewModels.ProjectTicketsViewModel
 
 @{ ViewData["Title"] = Model.Project.Name; }
 
@@ -37,7 +37,7 @@
 				Category
 			</label>
 			<div class="">
-				@foreach (string enumVal in Enum.GetNames(typeof(Bug.CategoryEnum)))
+				@foreach (string enumVal in Enum.GetNames(typeof(Ticket.CategoryEnum)))
 				{
 	<div class="">
 		<input type="checkbox"
@@ -55,7 +55,7 @@
 		<div id="statusCheckboxes" class=" text-nowrap">
 			<label for="statusCheckboxes" class="font-weight-bold">Status</label>
 			<div class="">
-				@foreach (string enumVal in Enum.GetNames(typeof(Bug.StatusEnum)))
+				@foreach (string enumVal in Enum.GetNames(typeof(Ticket.StatusEnum)))
 				{
 	<div class="">
 		<input type="checkbox"
@@ -73,7 +73,7 @@
 		<div id="priorityCheckboxes" class=" text-nowrap border-primary">
 			<label for="priorityCheckboxes" class="font-weight-bold">Priority</label>
 			<div class="">
-				@foreach (string enumVal in Enum.GetNames(typeof(Bug.PriorityEnum)))
+				@foreach (string enumVal in Enum.GetNames(typeof(Ticket.PriorityEnum)))
 				{
 	<div class="">
 		<input type="checkbox"
@@ -95,7 +95,7 @@
 	</h2>
 
 	<!-- new ticket link -->
-	<a asp-controller="Bugs"
+	<a asp-controller="Tickets"
 		 asp-action="Create"
 		 asp-route-id="@Model.Project.Id"
 		 class="">
@@ -113,7 +113,22 @@
 	<form>
 		Viewing
 		<!-- tickets on current page -->
-		@((Model.ticketsPerPage*Model.page) == 0 ? 1 : (Model.ticketsPerPage * Model.page))-@((Model.ticketsPerPage*(Model.page+1)) > Model.totalTicketsInQuery ? Model.totalTicketsInQuery : (Model.ticketsPerPage * (Model.page + 1)))
+		@(
+			Model.totalTicketsInQuery == 0
+				? 0
+				: (
+						Model.ticketsPerPage * Model.page == 0
+							? 1
+							: Model.ticketsPerPage * Model.page
+					)
+					+ "-" +
+					(
+						Model.ticketsPerPage * (Model.page + 1) > Model.totalTicketsInQuery
+							? Model.totalTicketsInQuery
+							: Model.ticketsPerPage * (Model.page + 1)
+					)
+
+		)
 		<!-- total tickets in query -->
 		of @Model.totalTicketsInQuery tickets,
 		<!-- # of tickets to display -->
@@ -191,8 +206,8 @@
 						 asp-route-search="@Model.search"
 						 asp-route-orderByColumn="Category"
 						 asp-route-orderDirection="@(Model.orderByColumn == "Category" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Category)">
-						@Html.DisplayNameFor(model => model.Bugs[0].Category)
+						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].Category)">
+						@Html.DisplayNameFor(model => model.Tickets[0].Category)
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -204,8 +219,8 @@
 						 asp-route-search="@Model.search"
 						 asp-route-orderByColumn="Title"
 						 asp-route-orderDirection="@(Model.orderByColumn == "Title" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Title)">
-						@Html.DisplayNameFor(model => model.Bugs[0].Title)
+						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].Title)">
+						@Html.DisplayNameFor(model => model.Tickets[0].Title)
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -217,8 +232,8 @@
 						 asp-route-search="@Model.search"
 						 asp-route-orderByColumn="Status"
 						 asp-route-orderDirection="@(Model.orderByColumn == "Status" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Status)">
-						@Html.DisplayNameFor(model => model.Bugs[0].Status)
+						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].Status)">
+						@Html.DisplayNameFor(model => model.Tickets[0].Status)
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -230,8 +245,8 @@
 						 asp-route-search="@Model.search"
 						 asp-route-orderByColumn="Priority"
 						 asp-route-orderDirection="@(Model.orderByColumn == "Priority" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].Priority)">
-						@Html.DisplayNameFor(model => model.Bugs[0].Priority)
+						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].Priority)">
+						@Html.DisplayNameFor(model => model.Tickets[0].Priority)
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -243,8 +258,8 @@
 						 asp-route-search="@Model.search"
 						 asp-route-orderByColumn="UserName"
 						 asp-route-orderDirection="@(Model.orderByColumn == "UserName" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].UserName)">
-						@Html.DisplayNameFor(model => model.Bugs[0].UserName)
+						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].UserName)">
+						@Html.DisplayNameFor(model => model.Tickets[0].UserName)
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -256,21 +271,21 @@
 						 asp-route-search="@Model.search"
 						 asp-route-orderByColumn="CreationTime"
 						 asp-route-orderDirection="@(Model.orderByColumn == "CreationTime" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Bugs[0].CreationTime)">
-						@Html.DisplayNameFor(model => model.Bugs[0].CreationTime)
+						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].CreationTime)">
+						@Html.DisplayNameFor(model => model.Tickets[0].CreationTime)
 					</a>
 				</th>
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var item in Model.Bugs)
+			@foreach (var item in Model.Tickets)
 			{
 <tr>
 	<td>
 		@Html.DisplayFor(modelItem => item.Category)
 	</td>
 	<td>
-		<a asp-controller="Bugs" asp-action="View" asp-route-id="@item.Id">
+		<a asp-controller="Tickets" asp-action="View" asp-route-id="@item.Id">
 			@Html.DisplayFor(modelItem => item.Title)
 		</a>
 	</td>

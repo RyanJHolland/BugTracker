@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BugTracker.Areas.Accounts.Controllers
+namespace TicketTracker.Areas.Accounts.Controllers
 {
 	[Area("Accounts")]
 	[Authorize(Roles = "Administrator, Project Manager")]

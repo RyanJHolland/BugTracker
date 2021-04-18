@@ -1,15 +1,15 @@
-﻿@model BugTracker.ViewModels.ProjectBugCommentsViewModel
+﻿@model TicketTracker.ViewModels.ProjectTicketCommentsViewModel
 
-@{ ViewData["Title"] = Model.Bug.Title; }
+@{ ViewData["Title"] = Model.Ticket.Title; }
 
 <!-- Title -->
 <h2 class="mb-header">
-	@Model.Bug.Title
+	@Model.Ticket.Title
 </h2>
 
 
 <!-- Info display -->
-<div class="bug-container">
+<div class="ticket-container">
 	<dl class="row">
 
 		<!-- Project info -->
@@ -24,50 +24,50 @@
 
 		<!-- Category info -->
 		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Bug.Category)
+			@Html.DisplayNameFor(model => model.Ticket.Category)
 		</dt>
 		<dd class="col-sm-4">
-			@Html.DisplayFor(model => model.Bug.Category)
+			@Html.DisplayFor(model => model.Ticket.Category)
 		</dd>
 
 		<!-- Creation time info -->
 		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Bug.CreationTime)
+			@Html.DisplayNameFor(model => model.Ticket.CreationTime)
 		</dt>
 		<dd class="col-sm-4">
-			@Html.DisplayFor(model => model.Bug.CreationTime)
+			@Html.DisplayFor(model => model.Ticket.CreationTime)
 		</dd>
 
 		<!-- Priority info -->
 		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Bug.Priority)
+			@Html.DisplayNameFor(model => model.Ticket.Priority)
 		</dt>
 		<dd class="col-sm-4">
-			@Html.DisplayFor(model => model.Bug.Priority)
+			@Html.DisplayFor(model => model.Ticket.Priority)
 		</dd>
 
 		<!-- Owner info -->
 		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Bug.UserName)
+			@Html.DisplayNameFor(model => model.Ticket.UserName)
 		</dt>
 		<dd class="col-sm-4">
-			@Html.DisplayFor(model => model.Bug.UserName)
+			@Html.DisplayFor(model => model.Ticket.UserName)
 		</dd>
 
 		<!-- Status info -->
 		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Bug.Status)
+			@Html.DisplayNameFor(model => model.Ticket.Status)
 		</dt>
 		<dd class="col-sm-4">
-			@Html.DisplayFor(model => model.Bug.Status)
+			@Html.DisplayFor(model => model.Ticket.Status)
 		</dd>
 
 		<!-- Body info -->
 		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Bug.Body)
+			@Html.DisplayNameFor(model => model.Ticket.Body)
 		</dt>
 		<dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Bug.Body)
+			@Html.DisplayFor(model => model.Ticket.Body)
 		</dd>
 	</dl>
 
@@ -76,13 +76,13 @@
 		<div class="col">
 
 			<!-- Reply -->
-			<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Bug.Id">Reply</a>
+			<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Ticket.Id">Reply</a>
 			|
 			<!-- Edit -->
-			<a asp-action="Edit" asp-route-id="@Model.Bug.Id">Edit</a>
+			<a asp-action="Edit" asp-route-id="@Model.Ticket.Id">Edit</a>
 			|
 			<!-- Delete -->
-			<a asp-action="Delete" asp-route-id="@Model.Bug.Id">Delete</a>
+			<a asp-action="Delete" asp-route-id="@Model.Ticket.Id">Delete</a>
 		</div>
 	</div>
 
@@ -125,7 +125,7 @@
 				<div class="col">
 
 					<!-- Reply to comment -->
-					<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Bug.Id">Reply</a>
+					<a asp-controller="Comments" asp-action="Create" asp-route-id="@Model.Ticket.Id">Reply</a>
 					|
 					<!-- Edit comment -->
 					<a asp-controller="Comments" asp-action="Edit" asp-route-id="@item.Id">Edit</a>

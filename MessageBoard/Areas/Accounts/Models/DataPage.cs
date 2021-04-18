@@ -1,4 +1,4 @@
-﻿namespace BugTracker.Areas.Accounts.Models
+﻿namespace TicketTracker.Areas.Accounts.Models
 {
 	public abstract class DataPage
 	{

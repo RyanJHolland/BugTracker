@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace BugTracker.Areas.Identity.Pages.Account
+namespace TicketTracker.Areas.Identity.Pages.Account
 {
     public class AccessDeniedModel : PageModel
     {
