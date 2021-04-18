@@ -31,11 +31,6 @@ namespace TicketTracker.Controllers
 
 		#endregion Construction
 
-		public CommentsController(ApplicationDbContext context)
-		{
-			_context = context;
-		}
-
 		// GET: Comments/View/5
 		public async Task<IActionResult> View(int? id)
 		{
@@ -76,7 +71,7 @@ namespace TicketTracker.Controllers
 
 			var comment = new Comment();
 
-			ProjectTicketCommentViewModel vm = new ProjectTicketCommentViewModel
+			EditCommentVM vm = new EditCommentVM
 			{
 				Project = project,
 				Ticket = ticket,
@@ -90,7 +85,7 @@ namespace TicketTracker.Controllers
 		[Authorize]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Title,Body")] Comment comment, int id)
+		public async Task<IActionResult> Create([Bind("Title,Body")] Comment comment, int id, int? parentCommentId)
 		{
 			int ticketId = id; // This is just to clarify the following code.
 			if (ModelState.IsValid)
@@ -113,6 +108,10 @@ namespace TicketTracker.Controllers
 				comment.UserId = User.GetUserId();
 				comment.UserName = User.Identity.Name;
 				comment.CreationTime = DateTime.UtcNow;
+				if (parentCommentId != null)
+				{
+					comment.ParentCommentId = (int)parentCommentId;
+				}
 
 				_context.Add(comment);
 				await _context.SaveChangesAsync();
@@ -161,7 +160,7 @@ namespace TicketTracker.Controllers
 				return NotFound();
 			}
 
-			ProjectTicketCommentViewModel vm = new ProjectTicketCommentViewModel
+			EditCommentVM vm = new EditCommentVM
 			{
 				Project = project,
 				Ticket = ticket,
@@ -258,7 +257,7 @@ namespace TicketTracker.Controllers
 				return NotFound();
 			}
 
-			ProjectTicketCommentViewModel vm = new ProjectTicketCommentViewModel
+			EditCommentVM vm = new EditCommentVM
 			{
 				Project = project,
 				Ticket = ticket,
@@ -299,7 +298,7 @@ namespace TicketTracker.Controllers
 			_context.Comment.Remove(comment);
 			await _context.SaveChangesAsync();
 
-			return Redirect($"~/Tickets/View/{comment.ParentCommentId}");
+			return Redirect($"~/Tickets/View/{comment.ParentTicketId}");
 		}
 
 		private bool CommentExists(int id)

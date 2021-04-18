@@ -2,7 +2,7 @@
 
 namespace TicketTracker.ViewModels
 {
-	public class ProjectTicketCommentViewModel
+	public class EditCommentVM
 	{
 		public Project Project { get; set; }
 		public Ticket Ticket { get; set; }

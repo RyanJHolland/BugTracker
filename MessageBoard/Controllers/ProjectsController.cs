@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -41,6 +42,99 @@ namespace TicketTracker.Controllers
 		// Displays the most recent tickets on the chosen project. This is where a user browses a project's tickets.
 		public async Task<IActionResult> View(
 			int? id,
+			int p = 1, int ps = 10, string q = null,
+			string orderByColumn = "CreationTime",
+			string orderDirection = "DESC",
+			int ticketsPerPage = 10,
+			int page = 0,
+			string search = ""
+			)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var project = await _context.Project
+					.FirstOrDefaultAsync(m => m.Id == id);
+			if (project == null)
+			{
+				return NotFound();
+			}
+
+			// Retrieve data:
+			var query = _context.Users.AsQueryable();
+			var fullCount = query.Count();
+			if (!String.IsNullOrWhiteSpace(q))
+				query = query.Where(d => d.NormalizedUserName.Contains(q) || d.NormalizedEmail.Contains(q));
+
+			var filteredCount = query.Count();
+			/*
+			// Build model:
+			var model = new ProjectViewModel();
+			model.DataPage = new DataPage<IdentityUser>()
+			{
+				CurrentPage = p,
+				PageSize = ps,
+				FullCount = fullCount,
+				FilteredCount = filteredCount,
+				Filter = q,
+				Items = query.OrderBy(u => u.UserName).Page(p, ps)
+			};
+			*/
+
+
+			// Validate that the sort order parameter is a valid column
+			var props = typeof(Ticket).GetProperties()
+				.Select(prop => prop.Name)
+				.ToArray();
+			if (!props.Contains(orderByColumn))
+			{
+				orderByColumn = "CreationTime";
+			}
+
+			// sanitize orderByColumn
+			if (orderDirection != "ASC")
+			{
+				orderDirection = "DESC";
+			}
+
+			//if (!string.IsNullOrEmpty(search)){var tickets = await _context.Ticket		.Where(x => x.Title.Contains(search) || x.Body.Contains(search) || x.UserName.Contains(search));}
+
+
+			var tickets = await _context.Ticket
+			.FromSqlRaw<Ticket>($"SELECT * FROM Ticket WHERE ParentProjectId={id} ORDER BY {orderByColumn} {orderDirection} OFFSET {page * ticketsPerPage} ROWS FETCH NEXT {ticketsPerPage} ROWS ONLY;")
+			.ToListAsync();
+
+			// AND Title LIKE '%{search}%' OR Status LIKE ...
+			// TO DO: change to parameterized query to prevent sql injection thru search field
+
+			var totalTicketsInQuery = await _context.Ticket
+				.Where(x => x.ParentProjectId == id)
+				.CountAsync();
+
+			oldViewProjectVM vm = new oldViewProjectVM
+			{
+				Project = project,
+				Tickets = tickets,
+				totalTicketsInQuery = totalTicketsInQuery,
+				orderByColumn = orderByColumn,
+				orderDirection = orderDirection,
+				ticketsPerPage = ticketsPerPage,
+				page = page,
+				search = search
+			};
+
+
+
+			return View(vm);
+		}
+
+		/*
+		// GET: Projects/View/5
+		// Displays the most recent tickets on the chosen project. This is where a user browses a project's tickets.
+		public async Task<IActionResult> View(
+			int? id,
 			string orderByColumn = "CreationTime",
 			string orderDirection = "DESC",
 			int ticketsPerPage = 10,
@@ -74,13 +168,9 @@ namespace TicketTracker.Controllers
 			{
 				orderDirection = "DESC";
 			}
-			/*
-			if (!string.IsNullOrEmpty(search))
-			{
-				var tickets = await _context.Ticket
-					.Where(x => x.Title.Contains(search) || x.Body.Contains(search) || x.UserName.Contains(search));
-			}
-			*/
+
+			//if (!string.IsNullOrEmpty(search)){var tickets = await _context.Ticket		.Where(x => x.Title.Contains(search) || x.Body.Contains(search) || x.UserName.Contains(search));}
+
 
 			var tickets = await _context.Ticket
 			.FromSqlRaw<Ticket>($"SELECT * FROM Ticket WHERE ParentProjectId={id} ORDER BY {orderByColumn} {orderDirection} OFFSET {page * ticketsPerPage} ROWS FETCH NEXT {ticketsPerPage} ROWS ONLY;")
@@ -107,6 +197,7 @@ namespace TicketTracker.Controllers
 
 			return View(vm);
 		}
+		*/
 
 		// GET: Projects/Create
 		[Authorize(Roles = "Administrator, Project Manager")]
@@ -199,7 +290,7 @@ namespace TicketTracker.Controllers
 			admins.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
 			possibleProjectOwnerUserNames.Remove(project.ProjectOwnerUserName);
 
-			ProjectEditViewModel vm = new ProjectEditViewModel
+			EditProjectVM vm = new EditProjectVM
 			{
 				Project = project,
 				PossibleProjectOwnerUserNames = possibleProjectOwnerUserNames

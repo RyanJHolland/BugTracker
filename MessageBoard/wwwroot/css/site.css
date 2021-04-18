@@ -1,8 +1,42 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+/* from the accounts page */
+#body-content {
+	margin-bottom: 32px;
+}
 
-/* gray-blue monochrome color scheme*/
+h2 {
+	padding-top: 36px;
+	padding-bottom: 24px;
+}
+
+.pagination .page-item {
+	min-width: 48px;
+	text-align: right;
+}
+
+	.pagination .page-item input[type=radio] {
+		display: none;
+	}
+
+.red-bordered {
+	border: solid 2px red;
+	padding: 1px;
+}
+
+.overlay {
+	background: rgba(0,0,0,0.33);
+	position: absolute;
+	padding: 0;
+	margin: 0;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: .25rem;
+}
+
 :root {
 	--textColor: #231f20;
 	--dkGray: #364747;
@@ -17,6 +51,21 @@ for details on configuring this project to bundle and minify static web assets. 
 	--link-hover: #007adc;
 }
 
+/* gray-blue color scheme
+:root {
+	--textColor: #231f20;
+	--dkGray: #364747;
+	--mdGray: #8d8d8d;
+	--ltGray: #eeeeee;
+	--backgroundColor: #dee0e2;
+	--bright: #005da6;
+	--dkGray2: #364747;
+	--bright2: rgba(253,187,45,1);
+	--bright3: #5400cd;
+	--link: #005da6;
+	--link-hover: #007adc;
+}
+	*/
 
 /* gray-blue inverted color scheme
 :root {
@@ -143,6 +192,7 @@ a {
 	text-decoration: underline;
 	color: var(--link);
 }
+
 	a:hover {
 		color: var(--link-hover);
 	}
@@ -268,9 +318,11 @@ button.accept-policy {
 .table-header {
 	color: var(--textColor);
 }
+
 	.table-header:hover {
 		color: var(--mdGray);
 	}
+
 	.table-header:active {
 		color: var(--backgroundColor) !important;
 		text-decoration: underline !important;
@@ -286,7 +338,6 @@ button.accept-policy {
 }
 
 .cta {
-
 	background: var(--dkGray);
 }
 
@@ -298,9 +349,9 @@ table, table td, table th, table thead th {
 }
 
 label {
-	padding:0px;
-	margin:0px;
-	height:10px;
+	padding: 0px;
+	margin: 0px;
+	height: 10px;
 }
 
 /* The sidebar menu */

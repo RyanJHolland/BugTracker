@@ -14,6 +14,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Include="wwwroot\css\site.css" />
+	  <Content Include="wwwroot\favicon.ico" />
+	  <Content Include="wwwroot\img\big sort.png" />
+	  <Content Include="wwwroot\img\bug_green.png" />
+	  <Content Include="wwwroot\img\bug_green_2.png" />
+	  <Content Include="wwwroot\img\bug_icon.png" />
+	  <Content Include="wwwroot\img\bw_bug.png" />
+	  <Content Include="wwwroot\img\detailed_bug.jpg" />
+	  <Content Include="wwwroot\img\sort.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="wwwroot\js\site.js" />
 		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />
 		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map" />

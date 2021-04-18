@@ -1,9 +1,9 @@
-﻿using TicketTracker.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TicketTracker.Models;
 
 namespace TicketTracker.ViewModels
 {
-	public class ProjectTicketsViewModel
+	public class oldViewProjectVM
 	{
 		public Project Project { get; set; }
 		public List<Ticket> Tickets { get; set; }

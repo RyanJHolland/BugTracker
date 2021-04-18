@@ -1,12 +1,13 @@
 ﻿using TicketTracker.Models;
-using System.Collections.Generic;
 
 namespace TicketTracker.ViewModels
 {
-	public class ProjectEditViewModel
+	public class EditTicketVM
 	{
 		public Project Project { get; set; }
-		public List<string> PossibleProjectOwnerUserNames { get; set; }
+		public Ticket Ticket { get; set; }
+		public string OwnerId { get; set; }
+		public string OwnerUserName { get; set; }
 
 		//		m => m.Ticket.Priority, new SelectList(Enum.GetValues(typeof(Ticket.PriorityEnum)))
 	}

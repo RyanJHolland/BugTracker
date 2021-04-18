@@ -59,7 +59,7 @@ namespace TicketTracker.Controllers
 					.FromSqlRaw<Comment>($"SELECT * FROM Comment WHERE ParentTicketId={id} ORDER BY CreationTime ASC;")
 					.ToListAsync();
 
-			ProjectTicketCommentsViewModel vm = new ProjectTicketCommentsViewModel
+			ViewTicketVM vm = new ViewTicketVM
 			{
 				Project = project,
 				Ticket = ticket,
@@ -82,7 +82,7 @@ namespace TicketTracker.Controllers
 
 			var ticket = new Ticket();
 
-			ProjectTicketViewModel vm = new()
+			EditTicketVM vm = new()
 			{
 				Project = project,
 				Ticket = ticket
@@ -155,7 +155,7 @@ namespace TicketTracker.Controllers
 				return NotFound();
 			}
 
-			ProjectTicketViewModel vm = new()
+			EditTicketVM vm = new()
 			{
 				Project = project,
 				Ticket = ticket
@@ -248,7 +248,7 @@ namespace TicketTracker.Controllers
 				return NotFound();
 			}
 
-			ProjectTicketViewModel vm = new ProjectTicketViewModel
+			EditTicketVM vm = new EditTicketVM
 			{
 				Project = project,
 				Ticket = ticket

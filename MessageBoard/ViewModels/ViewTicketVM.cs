@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TicketTracker.ViewModels
 {
-	public class ProjectTicketCommentsViewModel
+	public class ViewTicketVM
 	{
 		public Project Project { get; set; }
 		public Ticket Ticket { get; set; }
