@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using TicketTracker.Models;
 
 namespace TicketTracker.Areas.Accounts.Models.Users
 {

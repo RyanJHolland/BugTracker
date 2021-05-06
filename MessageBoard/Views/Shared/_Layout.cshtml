@@ -55,26 +55,32 @@
 						{
 							@if (Model.GetType().GetProperty("Project") != null)
 							{
-								<text>
-									<li class="nav-item">
-										<a class="nav-link" asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">
-											@Model.Project.Name
-										</a>
-									</li>
-								</text>
+								@if (Model.Project != null)
+								{
+									<text>
+										<li class="nav-item">
+											<a class="nav-link" asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">
+												@Model.Project.Name
+											</a>
+										</li>
+									</text>
+								}
 							}
 
 							<!-- Ticket link -->
 							<!-- (If this is a comment, this links to its ticket) -->
 							@if (Model.GetType().GetProperty("Ticket") != null)
 							{
-								<text>
-									<li class="nav-item">
-										<a class="nav-link" asp-controller="Tickets" asp-action="View" asp-route-id="@Model.Ticket.Id">
-											@Model.Ticket.Title
-										</a>
-									</li>
-								</text>
+								@if (Model.Ticket != null)
+								{
+									<text>
+										<li class="nav-item">
+											<a class="nav-link" asp-controller="Tickets" asp-action="View" asp-route-id="@Model.Ticket.Id">
+												@Model.Ticket.Title
+											</a>
+										</li>
+									</text>
+								}
 							}
 						}
 						<!--

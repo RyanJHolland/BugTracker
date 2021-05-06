@@ -1,4 +1,6 @@
-﻿namespace TicketTracker.Areas.Accounts.Models.ViewComponents
+﻿using TicketTracker.Models;
+
+namespace TicketTracker.Areas.Accounts.Models.ViewComponents
 {
 	public class AccountsPagerModel
 	{

@@ -1,7 +1,4 @@
-﻿using TicketTracker.Areas.Accounts.Models;
-using TicketTracker.Areas.Accounts.Models.Users;
-using TicketTracker.Data;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +7,10 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using TicketTracker.Areas.Accounts.Models.Users;
+using TicketTracker.Data;
+using TicketTracker.Common;
+using TicketTracker.Models;
 
 namespace TicketTracker.Areas.Accounts.Controllers
 {

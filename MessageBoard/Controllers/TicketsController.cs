@@ -168,7 +168,11 @@ namespace TicketTracker.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Authorize(Roles = "Administrator, Project Manager, Developer")]
-		public async Task<IActionResult> Edit(int id, [Bind("Title,Body,Priority,Category,Status")] Ticket ticket)
+		public async Task<IActionResult> Edit(
+			int id,
+			[Bind("Title,Body,Priority,Category,Status")] Ticket ticket,
+			string? redirectUrl
+			)
 		{
 			if (ModelState.IsValid)
 			{
@@ -212,6 +216,13 @@ namespace TicketTracker.Controllers
 					}
 				}
 			}
+
+			// if this ticket was edited from the Project View table, redirect there
+			if (redirectUrl != null)
+			{
+				return Redirect(redirectUrl);
+			}
+			// else redirect to the ticket
 			return Redirect($"~/Tickets/View/{id}");
 		}
 
@@ -268,7 +279,6 @@ namespace TicketTracker.Controllers
 				return NotFound();
 			}
 			var ticket = await _context.Ticket.FindAsync(id);
-
 
 			// Authorize
 			if (!User.IsInRole("Administrator"))

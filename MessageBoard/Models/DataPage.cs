@@ -1,4 +1,6 @@
-﻿namespace TicketTracker.Areas.Accounts.Models
+﻿using TicketTracker.Common;
+
+namespace TicketTracker.Models
 {
 	public abstract class DataPage
 	{
@@ -29,10 +31,16 @@
 		public string Filter { get; set; }
 
 		public int FilteredCount { get; set; }
+
+		public string OrderByColumn { get; set; }
+
+		public string OrderDirection { get; set; }
+
 	}
 
 	public class DataPage<T> : DataPage
 	{
 		public T[] Items { get; set; }
 	}
+
 }

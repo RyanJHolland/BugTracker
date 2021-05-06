@@ -34,7 +34,7 @@
                         <th scope="row" onclick-propagate="off" onchange-propagate="off"><input class="itemcheck" type="checkbox" name="CheckedIds" value="@item.Id" /></th>
                         <td>
                             @item.UserName
-                            @if (item.IsLockedout())
+                            @if (item.LockoutEnd.HasValue && item.LockoutEnd > DateTime.UtcNow)
                             {
                                 <i class="fa fa-lock"></i>
                             }

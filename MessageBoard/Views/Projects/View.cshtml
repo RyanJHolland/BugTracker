@@ -1,4 +1,5 @@
-﻿@model TicketTracker.ViewModels.oldViewProjectVM
+﻿@using System.Linq;
+@model TicketTracker.ViewModels.ViewProjectVM
 
 @{ ViewData["Title"] = Model.Project.Name; }
 
@@ -13,19 +14,19 @@
 					 id="search"
 					 placeholder="search"
 					 name="search"
-					 value="@Model.search"
+					 value="@Model.DataPage.Filter"
 					 max="100"
 					 style="width: 100px; height: 20px;" />
 		<!-- other necessary params (orderBy column and direction) -->
 		<input type="hidden"
 					 name="orderByColumn"
-					 value="@Model.orderByColumn" />
+					 value="@Model.DataPage.OrderByColumn" />
 		<input type="hidden"
 					 name="orderDirection"
-					 value="@Model.orderDirection" />
+					 value="@Model.DataPage.OrderDirection" />
 		<input type="hidden"
-					 name="ticketsPerPage"
-					 value="@Model.ticketsPerPage" />
+					 name="DataPage.PageSize"
+					 value="@Model.DataPage.PageSize" />
 	</form>
 	<br />
 
@@ -109,32 +110,58 @@
 		Edit Project
 	</a>
 
+	<!-- search input field -->
+	<form>
+		<div class="input-group">
+			<input type="text" name="filter" class="form-control" placeholder="Search..." value="@Model.DataPage.Filter">
+			<div class="input-group-append">
+					<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+			</div>
+			<!-- other necessary params -->
+			<input type="hidden"
+						 name="PageCount"
+						 value="@Model.DataPage.PageCount"
+						 min="1"
+						 max="99999"
+						 style="width: 40px; height: 20px;" />
+			<input type="hidden"
+						 name="orderByColumn"
+						 value="@Model.DataPage.OrderByColumn" />
+			<input type="hidden"
+						 name="orderDirection"
+						 value="@Model.DataPage.OrderDirection" />
+			<input type="hidden"
+						 name="Filter"
+						 value="@Model.DataPage.Filter" />
+	  </div>
+	</form>
+
 	<!-- ticket count display -->
 	<form>
 		Viewing
 		<!-- tickets on current page -->
 		@(
-			Model.totalTicketsInQuery == 0
+			Model.DataPage.FilteredCount == 0
 				? 0
 				: (
-						Model.ticketsPerPage * Model.page == 0
+						Model.DataPage.CurrentPage == 1
 							? 1
-							: Model.ticketsPerPage * Model.page
+							: Model.DataPage.PageSize * (Model.DataPage.CurrentPage - 1) + 1
 					)
 					+ "-" +
 					(
-						Model.ticketsPerPage * (Model.page + 1) > Model.totalTicketsInQuery
-							? Model.totalTicketsInQuery
-							: Model.ticketsPerPage * (Model.page + 1)
+						Model.DataPage.PageSize * Model.DataPage.CurrentPage >= Model.DataPage.FilteredCount
+							? Model.DataPage.FilteredCount
+							: Model.DataPage.PageSize * Model.DataPage.CurrentPage
 					)
 
 		)
 		<!-- total tickets in query -->
-		of @Model.totalTicketsInQuery tickets,
+		of @Model.DataPage.FilteredCount tickets,
 		<!-- # of tickets to display -->
 		<input type="text"
-					 name="ticketsPerPage"
-					 value="@Model.ticketsPerPage"
+					 name="PageSize"
+					 value="@Model.DataPage.PageSize"
 					 min="1"
 					 max="99999"
 					 style="width: 40px; height: 20px;" />
@@ -143,52 +170,53 @@
 		<!-- other necessary params (orderBy column and direction) -->
 		<input type="hidden"
 					 name="orderByColumn"
-					 value="@Model.orderByColumn" />
+					 value="@Model.DataPage.OrderByColumn" />
 		<input type="hidden"
 					 name="orderDirection"
-					 value="@Model.orderDirection" />
+					 value="@Model.DataPage.OrderDirection" />
 		<input type="hidden"
-					 name="search"
-					 value="@Model.search" />
+					 name="Filter"
+					 value="@Model.DataPage.Filter" />
 	</form>
 
 	<!-- Previous / Next Page links-->
 	<div class="page-controls">
 		<!-- Previous Page link -->
-		@if (Model.page > 0)
+		@if (Model.DataPage.CurrentPage > 1)
 		{
 <a asp-controller="Projects"
 	 asp-action="View"
 	 asp-route-id="@Model.Project.Id"
-	 asp-route-ticketsPerPage="@Model.ticketsPerPage"
-	 asp-route-search="@Model.search"
-	 asp-route-orderByColumn="@Model.orderByColumn"
-	 asp-route-orderDirection="@Model.orderDirection"
-	 asp-route-page="@(Model.page - 1)"
+	 asp-route-pageSize="@Model.DataPage.PageSize"
+	 asp-route-filter="@Model.DataPage.Filter"
+	 asp-route-orderByColumn="@Model.DataPage.OrderByColumn"
+	 asp-route-orderDirection="@Model.DataPage.OrderDirection"
+	 asp-route-currentPage="@(Model.DataPage.CurrentPage - 1)"
 	 alt="previous page of results">
 	Previous Page
-</a>}
-
-		@if ((Model.page > 0) && ((Model.page + 1) * Model.ticketsPerPage < Model.totalTicketsInQuery))
-		{
-<html>
-|
-</html>
+</a>
+} else {
+	<span class="text-muted">Previous Page</span>
 }
+<!-- Divider line -->
+|
 		<!-- Next Page link -->
-		@if (((Model.page + 1) * Model.ticketsPerPage < Model.totalTicketsInQuery))
+		@if (((Model.DataPage.CurrentPage + 1) * Model.DataPage.PageSize <= Model.DataPage.FilteredCount))
 		{
 <a asp-controller="Projects"
 	 asp-action="View"
 	 asp-route-id="@Model.Project.Id"
-	 asp-route-ticketsPerPage="@Model.ticketsPerPage"
-	 asp-route-search="@Model.search"
-	 asp-route-orderByColumn="@Model.orderByColumn"
-	 asp-route-orderDirection="@Model.orderDirection"
-	 asp-route-page="@(Model.page+1)"
+	 asp-route-pageSize="@Model.DataPage.PageSize"
+	 asp-route-filter="@Model.DataPage.Filter"
+	 asp-route-orderByColumn="@Model.DataPage.OrderByColumn"
+	 asp-route-orderDirection="@Model.DataPage.OrderDirection"
+	 asp-route-currentPage="@(Model.DataPage.CurrentPage + 1)"
 	 alt="next page of results">
 	Next Page
-</a>}
+</a>
+} else {
+	<span class="text-muted">Next Page</span>
+}
 	</div>
 
 	<!-- The actual search results table -->
@@ -202,12 +230,23 @@
 						 asp-controller="Projects"
 						 asp-action="View"
 						 asp-route-id="@Model.Project.Id"
-						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
-						 asp-route-search="@Model.search"
+						 asp-route-pageSize="@Model.DataPage.PageSize"
+						 asp-route-filter="@Model.DataPage.Filter"
 						 asp-route-orderByColumn="Category"
-						 asp-route-orderDirection="@(Model.orderByColumn == "Category" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].Category)">
-						@Html.DisplayNameFor(model => model.Tickets[0].Category)
+						 asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "Category" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].Category)">
+						@Html.DisplayNameFor(model => model.DataPage.Items[0].Category)
+						@if (Model.DataPage.OrderByColumn == "Category")
+						{
+							if (Model.DataPage.OrderDirection == "ASC")
+							{
+								@:&#9650;
+							}
+							else
+							{
+								@:&#9660;
+							}
+						}
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -215,12 +254,23 @@
 						 asp-controller="Projects"
 						 asp-action="View"
 						 asp-route-id="@Model.Project.Id"
-						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
-						 asp-route-search="@Model.search"
+						 asp-route-pageSize="@Model.DataPage.PageSize"
+						 asp-route-filter="@Model.DataPage.Filter"
 						 asp-route-orderByColumn="Title"
-						 asp-route-orderDirection="@(Model.orderByColumn == "Title" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].Title)">
-						@Html.DisplayNameFor(model => model.Tickets[0].Title)
+						 asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "Title" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].Title)">
+						@Html.DisplayNameFor(model => model.DataPage.Items[0].Title)
+						@if (Model.DataPage.OrderByColumn == "Title")
+						{
+							if (Model.DataPage.OrderDirection == "ASC")
+							{
+								@:&#9650;
+							}
+							else
+							{
+								@:&#9660;
+							}
+						}
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -228,12 +278,23 @@
 						 asp-controller="Projects"
 						 asp-action="View"
 						 asp-route-id="@Model.Project.Id"
-						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
-						 asp-route-search="@Model.search"
+						 asp-route-pageSize="@Model.DataPage.PageSize"
+						 asp-route-filter="@Model.DataPage.Filter"
 						 asp-route-orderByColumn="Status"
-						 asp-route-orderDirection="@(Model.orderByColumn == "Status" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].Status)">
-						@Html.DisplayNameFor(model => model.Tickets[0].Status)
+						 asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "Status" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].Status)">
+						@Html.DisplayNameFor(model => model.DataPage.Items[0].Status)
+												@if (Model.DataPage.OrderByColumn == "Status")
+						{
+							if (Model.DataPage.OrderDirection == "ASC")
+							{
+								@:&#9650;
+							}
+							else
+							{
+								@:&#9660;
+							}
+						}
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -241,12 +302,23 @@
 						 asp-controller="Projects"
 						 asp-action="View"
 						 asp-route-id="@Model.Project.Id"
-						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
-						 asp-route-search="@Model.search"
+						 asp-route-pageSize="@Model.DataPage.PageSize"
+						 asp-route-filter="@Model.DataPage.Filter"
 						 asp-route-orderByColumn="Priority"
-						 asp-route-orderDirection="@(Model.orderByColumn == "Priority" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].Priority)">
-						@Html.DisplayNameFor(model => model.Tickets[0].Priority)
+						 asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "Priority" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].Priority)">
+						@Html.DisplayNameFor(model => model.DataPage.Items[0].Priority)
+												@if (Model.DataPage.OrderByColumn == "Priority")
+						{
+							if (Model.DataPage.OrderDirection == "ASC")
+							{
+								@:&#9650;
+							}
+							else
+							{
+								@:&#9660;
+							}
+						}
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -254,12 +326,23 @@
 						 asp-controller="Projects"
 						 asp-action="View"
 						 asp-route-id="@Model.Project.Id"
-						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
-						 asp-route-search="@Model.search"
+						 asp-route-pageSize="@Model.DataPage.PageSize"
+						 asp-route-filter="@Model.DataPage.Filter"
 						 asp-route-orderByColumn="UserName"
-						 asp-route-orderDirection="@(Model.orderByColumn == "UserName" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].UserName)">
-						@Html.DisplayNameFor(model => model.Tickets[0].UserName)
+						 asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "UserName" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].UserName)">
+						@Html.DisplayNameFor(model => model.DataPage.Items[0].UserName)
+												@if (Model.DataPage.OrderByColumn == "UserName")
+						{
+							if (Model.DataPage.OrderDirection == "ASC")
+							{
+								@:&#9650;
+							}
+							else
+							{
+								@:&#9660;
+							}
+						}
 					</a>
 				</th>
 				<th class="text-nowrap">
@@ -267,39 +350,79 @@
 						 asp-controller="Projects"
 						 asp-action="View"
 						 asp-route-id="@Model.Project.Id"
-						 asp-route-ticketsPerPage="@Model.ticketsPerPage"
-						 asp-route-search="@Model.search"
+						 asp-route-pageSize="@Model.DataPage.PageSize"
+						 asp-route-filter="@Model.DataPage.Filter"
 						 asp-route-orderByColumn="CreationTime"
-						 asp-route-orderDirection="@(Model.orderByColumn == "CreationTime" && Model.orderDirection == "ASC" ? "DESC" : "ASC")"
-						 alt="sort by @Html.DisplayNameFor(model => model.Tickets[0].CreationTime)">
-						@Html.DisplayNameFor(model => model.Tickets[0].CreationTime)
+						 asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "CreationTime" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+						 alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].CreationTime)">
+						@Html.DisplayNameFor(model => model.DataPage.Items[0].CreationTime)
+												@if (Model.DataPage.OrderByColumn == "CreationTime")
+						{
+							if (Model.DataPage.OrderDirection == "ASC")
+							{
+								@:&#9650;
+							}
+							else
+							{
+								@:&#9660;
+							}
+						}
 					</a>
 				</th>
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var item in Model.Tickets)
+			<!-- the code below runs for each ticket -->
+			@foreach (var ticket in Model.DataPage.Items)
 			{
+		<!-- a row of the table, representing one ticket -->
 <tr>
+		<!-- Ticket row: Category column value -->
 	<td>
-		@Html.DisplayFor(modelItem => item.Category)
+		@* <div class="dropdown">
+			<button class="btn btn-secondary dropdown-toggle" type="button" id="CategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				@Html.DisplayFor(modelItem => ticket.Category)
+			</button>
+			<div class="dropdown-menu" aria-labelledby="CategoryDropdown">
+				<form asp-controller="Tickets" asp-action="Edit" method="post">
+				@for (int i = 0; i < Model.CategoryValues.Length; i++)
+				{
+					<input type="hidden" name="redirectURL" value="@Url.PageLink()">
+					<input type="hidden" name="id" value="@ticket.Id">
+					<input type="hidden" name="Title" value="@ticket.Title">
+					<input type="hidden" name="Body" value="@ticket.Body">
+					<input type="hidden" name="Priority" value="@ticket.Priority">
+					<input type="hidden" name="Category" value="@i">
+					<input type="hidden" name="Status" value="@ticket.Status">
+					 <button class="dropdown-item" type="submit">
+						 @Model.CategoryValues.ElementAt(i)
+				 </button>
+				}
+				</form>
+			</div>
+		</div> *@
 	</td>
+		<!-- ticket title column -->
 	<td>
-		<a asp-controller="Tickets" asp-action="View" asp-route-id="@item.Id">
-			@Html.DisplayFor(modelItem => item.Title)
+		<a asp-controller="Tickets" asp-action="View" asp-route-id="@ticket.Id">
+			@Html.DisplayFor(modelItem => ticket.Title)
 		</a>
 	</td>
+		<!-- ticket status column -->
 	<td>
-		@Html.DisplayFor(modelItem => item.Status)
+		@Html.DisplayFor(modelItem => ticket.Status)
 	</td>
+		<!-- ticket priority column -->
 	<td>
-		@Html.DisplayFor(modelItem => item.Priority)
+		@Html.DisplayFor(modelItem => ticket.Priority)
 	</td>
+		<!-- ticket owner name column -->
 	<td>
-		@Html.DisplayFor(modelItem => item.UserName)
+		@Html.DisplayFor(modelItem => ticket.UserName)
 	</td>
+	<!-- ticket creation timestamp column -->
 	<td>
-		@Html.DisplayFor(modelItem => item.CreationTime)
+		@Html.DisplayFor(modelItem => ticket.CreationTime)
 	</td>
 </tr>}
 		</tbody>

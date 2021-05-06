@@ -1,6 +1,6 @@
-﻿using TicketTracker.Areas.Accounts.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using TicketTracker.Areas.Accounts.Models.ViewComponents;
-using Microsoft.AspNetCore.Mvc;
+using TicketTracker.Models;
 
 namespace TicketTracker.Areas.Accounts.ViewComponents
 {

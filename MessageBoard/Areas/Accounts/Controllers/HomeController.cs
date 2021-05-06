@@ -1,5 +1,5 @@
-﻿using TicketTracker.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using TicketTracker.Data;
 
 namespace TicketTracker.Areas.Accounts.Controllers
 {

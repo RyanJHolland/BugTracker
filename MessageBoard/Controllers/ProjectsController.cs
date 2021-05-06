@@ -3,14 +3,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TicketTracker.Data;
 using TicketTracker.Models;
 using TicketTracker.ViewModels;
+using TicketTracker.Common;
 
 namespace TicketTracker.Controllers
 {
@@ -18,15 +21,17 @@ namespace TicketTracker.Controllers
 	{
 		#region Constructor
 
+		private readonly IConfiguration _config;
 		private readonly ApplicationDbContext _context;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly UserManager<IdentityUser> _userManager;
 
-		public ProjectsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager)
+		public ProjectsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager, IConfiguration config)
 		{
 			_httpContextAccessor = httpContextAccessor;
 			_context = context;
 			_userManager = userManager;
+			_config = config;
 		}
 
 		#endregion Constructor
@@ -42,12 +47,11 @@ namespace TicketTracker.Controllers
 		// Displays the most recent tickets on the chosen project. This is where a user browses a project's tickets.
 		public async Task<IActionResult> View(
 			int? id,
-			int p = 1, int ps = 10, string q = null,
-			string orderByColumn = "CreationTime",
+			int currentPage = 1,
+			int pageSize = 10,
+			string filter = null,
 			string orderDirection = "DESC",
-			int ticketsPerPage = 10,
-			int page = 0,
-			string search = ""
+			string orderByColumn = "CreationTime"
 			)
 		{
 			if (id == null)
@@ -56,247 +60,195 @@ namespace TicketTracker.Controllers
 			}
 
 			var project = await _context.Project
-					.FirstOrDefaultAsync(m => m.Id == id);
+				.FirstOrDefaultAsync(m => m.Id == id);
 			if (project == null)
 			{
 				return NotFound();
 			}
 
-			// Retrieve data:
-			var query = _context.Users.AsQueryable();
-			var fullCount = query.Count();
-			if (!String.IsNullOrWhiteSpace(q))
-				query = query.Where(d => d.NormalizedUserName.Contains(q) || d.NormalizedEmail.Contains(q));
+			// Start to build a query
+			var query = _context.Ticket
+				.Where(t => t.ParentProjectId == id)
+				.AsQueryable();
 
-			var filteredCount = query.Count();
-			/*
-			// Build model:
-			var model = new ProjectViewModel();
-			model.DataPage = new DataPage<IdentityUser>()
+			// Get count of all tickets in project
+			var fullCount = await query.CountAsync();
+
+			// Add search filter to query
+			if (!String.IsNullOrWhiteSpace(filter))
 			{
-				CurrentPage = p,
-				PageSize = ps,
+				query = query
+				.Where(t => t.Body.Contains(filter)
+					|| t.Title.Contains(filter)
+					|| t.UserName.Contains(filter));
+			}
+
+			// Get # of tickets that match the filter
+			var filteredCount = await query.CountAsync();
+
+			// Add sort order and direction to query
+			switch (orderByColumn)
+			{
+				case "Title":
+					query = orderDirection == "DESC"
+						? query.OrderByDescending(t => t.Title)
+						: query.OrderBy(t => t.Title);
+					break;
+
+				case "Category":
+					query = orderDirection == "DESC"
+						? query.OrderByDescending(t => t.Category)
+						: query.OrderBy(t => t.Category);
+					break;
+
+				case "Priority":
+					query = orderDirection == "DESC"
+						? query.OrderByDescending(t => t.Priority)
+						: query.OrderBy(t => t.Priority);
+					break;
+
+				case "UserName":
+					query = orderDirection == "DESC"
+						? query.OrderByDescending(t => t.UserName)
+						: query.OrderBy(t => t.UserName);
+					break;
+
+				case "Status":
+					query = orderDirection == "DESC"
+						? query.OrderByDescending(t => t.Status)
+						: query.OrderBy(t => t.Status);
+					break;
+
+				default:
+					query = orderDirection == "DESC"
+						? query.OrderByDescending(t => t.CreationTime)
+						: query.OrderBy(t => t.CreationTime);
+					break;
+			}
+
+			// Paginate the query
+			query = query.Skip((currentPage - 1) * pageSize).Take(pageSize);
+
+			// Instantiate view model
+			var vm = new ViewProjectVM()
+			{
+				Project = project
+			};
+			vm.DataPage = new DataPage<Ticket>()
+			{
+				CurrentPage = currentPage,
+				PageSize = pageSize,
+				Filter = filter,
 				FullCount = fullCount,
 				FilteredCount = filteredCount,
-				Filter = q,
-				Items = query.OrderBy(u => u.UserName).Page(p, ps)
-			};
-			*/
-
-
-			// Validate that the sort order parameter is a valid column
-			var props = typeof(Ticket).GetProperties()
-				.Select(prop => prop.Name)
-				.ToArray();
-			if (!props.Contains(orderByColumn))
-			{
-				orderByColumn = "CreationTime";
-			}
-
-			// sanitize orderByColumn
-			if (orderDirection != "ASC")
-			{
-				orderDirection = "DESC";
-			}
-
-			//if (!string.IsNullOrEmpty(search)){var tickets = await _context.Ticket		.Where(x => x.Title.Contains(search) || x.Body.Contains(search) || x.UserName.Contains(search));}
-
-
-			var tickets = await _context.Ticket
-			.FromSqlRaw<Ticket>($"SELECT * FROM Ticket WHERE ParentProjectId={id} ORDER BY {orderByColumn} {orderDirection} OFFSET {page * ticketsPerPage} ROWS FETCH NEXT {ticketsPerPage} ROWS ONLY;")
-			.ToListAsync();
-
-			// AND Title LIKE '%{search}%' OR Status LIKE ...
-			// TO DO: change to parameterized query to prevent sql injection thru search field
-
-			var totalTicketsInQuery = await _context.Ticket
-				.Where(x => x.ParentProjectId == id)
-				.CountAsync();
-
-			oldViewProjectVM vm = new oldViewProjectVM
-			{
-				Project = project,
-				Tickets = tickets,
-				totalTicketsInQuery = totalTicketsInQuery,
-				orderByColumn = orderByColumn,
-				orderDirection = orderDirection,
-				ticketsPerPage = ticketsPerPage,
-				page = page,
-				search = search
+				OrderByColumn = orderByColumn,
+				OrderDirection = orderDirection
 			};
 
-
+			// Execute the query
+			vm.DataPage.Items = query.ToArray();
 
 			return View(vm);
-		}
-
-		/*
-		// GET: Projects/View/5
-		// Displays the most recent tickets on the chosen project. This is where a user browses a project's tickets.
-		public async Task<IActionResult> View(
-			int? id,
-			string orderByColumn = "CreationTime",
-			string orderDirection = "DESC",
-			int ticketsPerPage = 10,
-			int page = 0,
-			string search = ""
-			)
-		{
-			if (id == null)
-			{
-				return NotFound();
 			}
 
-			var project = await _context.Project
-					.FirstOrDefaultAsync(m => m.Id == id);
-			if (project == null)
+			// GET: Projects/Create
+			[Authorize(Roles = "Administrator, Project Manager")]
+			public IActionResult Create()
 			{
-				return NotFound();
+				return View();
 			}
 
-			// Validate that the sort order parameter is a valid column
-			var props = typeof(Ticket).GetProperties()
-				.Select(prop => prop.Name)
-				.ToArray();
-			if (!props.Contains(orderByColumn))
+			// POST: Projects/Create
+			[Authorize(Roles = "Administrator, Project Manager")]
+			[HttpPost]
+			[ValidateAntiForgeryToken]
+			public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
 			{
-				orderByColumn = "CreationTime";
-			}
-
-			// sanitize orderByColumn
-			if (orderDirection != "ASC")
-			{
-				orderDirection = "DESC";
-			}
-
-			//if (!string.IsNullOrEmpty(search)){var tickets = await _context.Ticket		.Where(x => x.Title.Contains(search) || x.Body.Contains(search) || x.UserName.Contains(search));}
-
-
-			var tickets = await _context.Ticket
-			.FromSqlRaw<Ticket>($"SELECT * FROM Ticket WHERE ParentProjectId={id} ORDER BY {orderByColumn} {orderDirection} OFFSET {page * ticketsPerPage} ROWS FETCH NEXT {ticketsPerPage} ROWS ONLY;")
-			.ToListAsync();
-
-			// AND Title LIKE '%{search}%' OR Status LIKE ...
-			// TO DO: change to parameterized query to prevent sql injection thru search field
-
-			var totalTicketsInQuery = await _context.Ticket
-				.Where(x => x.ParentProjectId == id)
-				.CountAsync();
-
-			ProjectTicketsViewModel vm = new ProjectTicketsViewModel
-			{
-				Project = project,
-				Tickets = tickets,
-				totalTicketsInQuery = totalTicketsInQuery,
-				orderByColumn = orderByColumn,
-				orderDirection = orderDirection,
-				ticketsPerPage = ticketsPerPage,
-				page = page,
-				search = search
-			};
-
-			return View(vm);
-		}
-		*/
-
-		// GET: Projects/Create
-		[Authorize(Roles = "Administrator, Project Manager")]
-		public IActionResult Create()
-		{
-			return View();
-		}
-
-		// POST: Projects/Create
-		[Authorize(Roles = "Administrator, Project Manager")]
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
-		{
-			if (ModelState.IsValid)
-			{
-				// add the user ID and name of the creator
-				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				project.ProjectOwnerId = userId;
-				project.ProjectOwnerUserName = User.Identity.Name;
-
-				// create project
-				_context.Add(project);
-				await _context.SaveChangesAsync();
-
-				// return view
-				return RedirectToAction(nameof(Index));
-			}
-			return View(project);
-		}
-
-		// GET: Projects/Edit/5
-		[Authorize(Roles = "Administrator, Project Manager")]
-		public async Task<IActionResult> Edit(int? id)
-		{
-			// check that project exists
-			if (id == null)
-			{
-				return NotFound();
-			}
-			var project = await _context.Project.FindAsync(id);
-			if (project == null)
-			{
-				return NotFound();
-			}
-
-			// Authorize user to edit this project
-			if (!User.IsInRole("Administrator"))
-			{
-				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != project.ProjectOwnerId)
+				if (ModelState.IsValid)
 				{
-					return Unauthorized();
+					// add the user ID and name of the creator
+					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+					project.ProjectOwnerId = userId;
+					project.ProjectOwnerUserName = User.Identity.Name;
+
+					// create project
+					_context.Add(project);
+					await _context.SaveChangesAsync();
+
+					// return view
+					return RedirectToAction(nameof(Index));
 				}
+				return View(project);
 			}
 
-			// fix any null data
-			if (project.ProjectOwnerUserName == null)
+			// GET: Projects/Edit/5
+			[Authorize(Roles = "Administrator, Project Manager")]
+			public async Task<IActionResult> Edit(int? id)
 			{
-				project.ProjectOwnerUserName = "unassigned";
-			}
-			if (project.ProjectOwnerId == null)
-			{
-				project.ProjectOwnerId = "unassigned";
-			}
-
-			/*
-			// get current project owner's username
-			if (project.ProjectOwnerUserName == null)
-			{
-				string currentProjectOwnerUserName = "";
-				try
+				// check that project exists
+				if (id == null)
 				{
-					currentProjectOwnerUserName = _context.Users
-					.FindAsync(project.ProjectOwnerId)
-					.Result.UserName;
+					return NotFound();
 				}
-				catch
+				var project = await _context.Project.FindAsync(id);
+				if (project == null)
 				{
-					currentProjectOwnerUserName = "unassigned";
+					return NotFound();
 				}
+
+				// Authorize user to edit this project
+				if (!User.IsInRole("Administrator"))
+				{
+					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+					if (userId != project.ProjectOwnerId)
+					{
+						return Unauthorized();
+					}
+				}
+
+				// fix any null data
+				if (project.ProjectOwnerUserName == null)
+				{
+					project.ProjectOwnerUserName = "unassigned";
+				}
+				if (project.ProjectOwnerId == null)
+				{
+					project.ProjectOwnerId = "unassigned";
+				}
+
+				/*
+				// get current project owner's username
+				if (project.ProjectOwnerUserName == null)
+				{
+					string currentProjectOwnerUserName = "";
+					try
+					{
+						currentProjectOwnerUserName = _context.Users
+						.FindAsync(project.ProjectOwnerId)
+						.Result.UserName;
+					}
+					catch
+					{
+						currentProjectOwnerUserName = "unassigned";
+					}
+				}
+				*/
+
+				// populate a list of all possible alternative Project Managers' usernames, for the dropdown box
+				List<string> possibleProjectOwnerUserNames = new List<string>();
+				var PMs = await _userManager.GetUsersInRoleAsync("Project Manager");
+				var admins = await _userManager.GetUsersInRoleAsync("Administrator");
+				PMs.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
+				admins.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
+				possibleProjectOwnerUserNames.Remove(project.ProjectOwnerUserName);
+
+				EditProjectVM vm = new EditProjectVM
+				{
+					Project = project,
+					PossibleProjectOwnerUserNames = possibleProjectOwnerUserNames
+				};
+				return View(vm);
 			}
-			*/
-
-			// populate a list of all possible alternative Project Managers' usernames, for the dropdown box
-			List<string> possibleProjectOwnerUserNames = new List<string>();
-			var PMs = await _userManager.GetUsersInRoleAsync("Project Manager");
-			var admins = await _userManager.GetUsersInRoleAsync("Administrator");
-			PMs.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
-			admins.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
-			possibleProjectOwnerUserNames.Remove(project.ProjectOwnerUserName);
-
-			EditProjectVM vm = new EditProjectVM
-			{
-				Project = project,
-				PossibleProjectOwnerUserNames = possibleProjectOwnerUserNames
-			};
-			return View(vm);
-		}
 
 		// POST: Projects/Edit/5
 		[Authorize(Roles = "Administrator, Project Manager")]
@@ -340,94 +292,94 @@ namespace TicketTracker.Controllers
 				return BadRequest();
 			}
 
-			if (ModelState.IsValid)
+				if (ModelState.IsValid)
+				{
+					try
+					{
+						_context.Update(project);
+						await _context.SaveChangesAsync();
+					}
+					catch (DbUpdateConcurrencyException)
+					{
+						if (!ProjectExists(project.Id))
+						{
+							return NotFound();
+						}
+						else
+						{
+							throw;
+						}
+					}
+					return RedirectToAction(nameof(Index));
+				}
+
+				// Authorize PM to edit this project
+				if (!User.IsInRole("Administrator"))
+				{
+					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+					if (userId != project.ProjectOwnerId)
+					{
+						return Unauthorized();
+					}
+				}
+				return View(project);
+			}
+
+			// GET: Projects/Delete/5
+			[Authorize(Roles = "Administrator, Project Manager")]
+			public async Task<IActionResult> Delete(int? id)
 			{
-				try
+				if (id == null)
 				{
-					_context.Update(project);
-					await _context.SaveChangesAsync();
+					return NotFound();
 				}
-				catch (DbUpdateConcurrencyException)
+
+				var project = await _context.Project
+						.FirstOrDefaultAsync(m => m.Id == id);
+				if (project == null)
 				{
-					if (!ProjectExists(project.Id))
+					return NotFound();
+				}
+
+				// Authorize PM to edit this project
+				if (!User.IsInRole("Administrator"))
+				{
+					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+					if (userId != project.ProjectOwnerId)
 					{
-						return NotFound();
-					}
-					else
-					{
-						throw;
+						return Unauthorized();
 					}
 				}
+
+				return View(project);
+			}
+
+			// POST: Projects/Delete/5
+			[Authorize(Roles = "Administrator, Project Manager")]
+			[HttpPost, ActionName("Delete")]
+			[ValidateAntiForgeryToken]
+			public async Task<IActionResult> DeleteConfirmed(int id)
+			{
+				var project = await _context.Project.FindAsync(id);
+
+				// Authorize PM to edit this project
+				if (!User.IsInRole("Administrator"))
+				{
+					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+					if (userId != project.ProjectOwnerId)
+					{
+						return Unauthorized();
+					}
+				}
+
+				_context.Project.Remove(project);
+				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}
 
-			// Authorize PM to edit this project
-			if (!User.IsInRole("Administrator"))
-			{
-				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != project.ProjectOwnerId)
-				{
-					return Unauthorized();
-				}
-			}
-			return View(project);
-		}
-
-		// GET: Projects/Delete/5
-		[Authorize(Roles = "Administrator, Project Manager")]
-		public async Task<IActionResult> Delete(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
-
-			var project = await _context.Project
-					.FirstOrDefaultAsync(m => m.Id == id);
-			if (project == null)
-			{
-				return NotFound();
-			}
-
-			// Authorize PM to edit this project
-			if (!User.IsInRole("Administrator"))
-			{
-				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != project.ProjectOwnerId)
-				{
-					return Unauthorized();
-				}
-			}
-
-			return View(project);
-		}
-
-		// POST: Projects/Delete/5
-		[Authorize(Roles = "Administrator, Project Manager")]
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed(int id)
-		{
-			var project = await _context.Project.FindAsync(id);
-
-			// Authorize PM to edit this project
-			if (!User.IsInRole("Administrator"))
-			{
-				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-				if (userId != project.ProjectOwnerId)
-				{
-					return Unauthorized();
-				}
-			}
-
-			_context.Project.Remove(project);
-			await _context.SaveChangesAsync();
-			return RedirectToAction(nameof(Index));
-		}
-
-		private bool ProjectExists(int id)
-		{
-			return _context.Project.Any(e => e.Id == id);
-		}
+	private bool ProjectExists(int id)
+	{
+		return _context.Project.Any(e => e.Id == id);
 	}
 }
+	}

@@ -14,15 +14,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="wwwroot\css\site.css" />
-	  <Content Include="wwwroot\favicon.ico" />
-	  <Content Include="wwwroot\img\big sort.png" />
-	  <Content Include="wwwroot\img\bug_green.png" />
-	  <Content Include="wwwroot\img\bug_green_2.png" />
-	  <Content Include="wwwroot\img\bug_icon.png" />
-	  <Content Include="wwwroot\img\bw_bug.png" />
-	  <Content Include="wwwroot\img\detailed_bug.jpg" />
-	  <Content Include="wwwroot\img\sort.png" />
+		<Content Include="wwwroot\css\site.css" />
+		<Content Include="wwwroot\favicon.ico" />
+		<Content Include="wwwroot\img\big sort.png" />
+		<Content Include="wwwroot\img\bug_green.png" />
+		<Content Include="wwwroot\img\bug_green_2.png" />
+		<Content Include="wwwroot\img\bug_icon.png" />
+		<Content Include="wwwroot\img\bw_bug.png" />
+		<Content Include="wwwroot\img\detailed_bug.jpg" />
+		<Content Include="wwwroot\img\sort.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -55,6 +55,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Dapper" Version="2.0.78" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.5" />
@@ -66,5 +67,6 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
 	</ItemGroup>
 </Project>
