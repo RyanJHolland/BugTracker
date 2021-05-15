@@ -20,7 +20,7 @@ namespace TicketTracker.Models
 		[Display(Name = "Owner Id")]
 		public string UserId { get; set; }
 
-		[Display(Name = "Owner UserName")]
+		[Display(Name = "Owner")]
 		public string UserName { get; set; }
 
 		[Display(Name = "Created")]

@@ -290,6 +290,15 @@ namespace TicketTracker.Controllers
 				}
 			}
 
+			var comments = await _context.Comment
+				.Where(c => c.ParentTicketId == ticket.Id)
+				.ToListAsync();
+
+			foreach (Comment c in comments)
+			{
+				_context.Comment.Remove(c);
+			}
+
 			int projectId = ticket.ParentProjectId;
 
 			_context.Ticket.Remove(ticket);

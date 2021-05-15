@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using TicketTracker.Data;
 using TicketTracker.Models;
 using TicketTracker.ViewModels;
-using TicketTracker.Common;
 
 namespace TicketTracker.Controllers
 {
@@ -129,10 +128,22 @@ namespace TicketTracker.Controllers
 			// Paginate the query
 			query = query.Skip((currentPage - 1) * pageSize).Take(pageSize);
 
+			// Authorize user to edit this project
+			bool userCanEditProject = true;
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.ProjectOwnerId)
+				{
+					userCanEditProject = false;
+				}
+			}
+
 			// Instantiate view model
 			var vm = new ViewProjectVM()
 			{
-				Project = project
+				Project = project,
+				UserCanEditProject = userCanEditProject
 			};
 			vm.DataPage = new DataPage<Ticket>()
 			{
@@ -149,106 +160,106 @@ namespace TicketTracker.Controllers
 			vm.DataPage.Items = query.ToArray();
 
 			return View(vm);
-			}
+		}
 
-			// GET: Projects/Create
-			[Authorize(Roles = "Administrator, Project Manager")]
-			public IActionResult Create()
+		// GET: Projects/Create
+		[Authorize(Roles = "Administrator, Project Manager")]
+		public IActionResult Create()
+		{
+			return View();
+		}
+
+		// POST: Projects/Create
+		[Authorize(Roles = "Administrator, Project Manager")]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
+		{
+			if (ModelState.IsValid)
 			{
-				return View();
-			}
+				// add the user ID and name of the creator
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				project.ProjectOwnerId = userId;
+				project.ProjectOwnerUserName = User.Identity.Name;
 
-			// POST: Projects/Create
-			[Authorize(Roles = "Administrator, Project Manager")]
-			[HttpPost]
-			[ValidateAntiForgeryToken]
-			public async Task<IActionResult> Create([Bind("Id,Name,Description")] Project project)
+				// create project
+				_context.Add(project);
+				await _context.SaveChangesAsync();
+
+				// return view
+				return RedirectToAction(nameof(Index));
+			}
+			return View(project);
+		}
+
+		// GET: Projects/Edit/5
+		[Authorize(Roles = "Administrator, Project Manager")]
+		public async Task<IActionResult> Edit(int? id)
+		{
+			// check that project exists
+			if (id == null)
 			{
-				if (ModelState.IsValid)
-				{
-					// add the user ID and name of the creator
-					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-					project.ProjectOwnerId = userId;
-					project.ProjectOwnerUserName = User.Identity.Name;
-
-					// create project
-					_context.Add(project);
-					await _context.SaveChangesAsync();
-
-					// return view
-					return RedirectToAction(nameof(Index));
-				}
-				return View(project);
+				return NotFound();
 			}
-
-			// GET: Projects/Edit/5
-			[Authorize(Roles = "Administrator, Project Manager")]
-			public async Task<IActionResult> Edit(int? id)
+			var project = await _context.Project.FindAsync(id);
+			if (project == null)
 			{
-				// check that project exists
-				if (id == null)
-				{
-					return NotFound();
-				}
-				var project = await _context.Project.FindAsync(id);
-				if (project == null)
-				{
-					return NotFound();
-				}
-
-				// Authorize user to edit this project
-				if (!User.IsInRole("Administrator"))
-				{
-					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-					if (userId != project.ProjectOwnerId)
-					{
-						return Unauthorized();
-					}
-				}
-
-				// fix any null data
-				if (project.ProjectOwnerUserName == null)
-				{
-					project.ProjectOwnerUserName = "unassigned";
-				}
-				if (project.ProjectOwnerId == null)
-				{
-					project.ProjectOwnerId = "unassigned";
-				}
-
-				/*
-				// get current project owner's username
-				if (project.ProjectOwnerUserName == null)
-				{
-					string currentProjectOwnerUserName = "";
-					try
-					{
-						currentProjectOwnerUserName = _context.Users
-						.FindAsync(project.ProjectOwnerId)
-						.Result.UserName;
-					}
-					catch
-					{
-						currentProjectOwnerUserName = "unassigned";
-					}
-				}
-				*/
-
-				// populate a list of all possible alternative Project Managers' usernames, for the dropdown box
-				List<string> possibleProjectOwnerUserNames = new List<string>();
-				var PMs = await _userManager.GetUsersInRoleAsync("Project Manager");
-				var admins = await _userManager.GetUsersInRoleAsync("Administrator");
-				PMs.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
-				admins.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
-				possibleProjectOwnerUserNames.Remove(project.ProjectOwnerUserName);
-
-				EditProjectVM vm = new EditProjectVM
-				{
-					Project = project,
-					PossibleProjectOwnerUserNames = possibleProjectOwnerUserNames
-				};
-				return View(vm);
+				return NotFound();
 			}
+
+			// Authorize user to edit this project
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.ProjectOwnerId)
+				{
+					return Unauthorized();
+				}
+			}
+
+			// fix any null data
+			if (project.ProjectOwnerUserName == null)
+			{
+				project.ProjectOwnerUserName = "unassigned";
+			}
+			if (project.ProjectOwnerId == null)
+			{
+				project.ProjectOwnerId = "unassigned";
+			}
+
+			/*
+			// get current project owner's username
+			if (project.ProjectOwnerUserName == null)
+			{
+				string currentProjectOwnerUserName = "";
+				try
+				{
+					currentProjectOwnerUserName = _context.Users
+					.FindAsync(project.ProjectOwnerId)
+					.Result.UserName;
+				}
+				catch
+				{
+					currentProjectOwnerUserName = "unassigned";
+				}
+			}
+			*/
+
+			// populate a list of all possible alternative Project Managers' usernames, for the dropdown box
+			List<string> possibleProjectOwnerUserNames = new List<string>();
+			var PMs = await _userManager.GetUsersInRoleAsync("Project Manager");
+			var admins = await _userManager.GetUsersInRoleAsync("Administrator");
+			PMs.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
+			admins.ToList().ForEach(u => possibleProjectOwnerUserNames.Add(u.UserName));
+			possibleProjectOwnerUserNames.Remove(project.ProjectOwnerUserName);
+
+			EditProjectVM vm = new EditProjectVM
+			{
+				Project = project,
+				PossibleProjectOwnerUserNames = possibleProjectOwnerUserNames
+			};
+			return View(vm);
+		}
 
 		// POST: Projects/Edit/5
 		[Authorize(Roles = "Administrator, Project Manager")]
@@ -292,94 +303,113 @@ namespace TicketTracker.Controllers
 				return BadRequest();
 			}
 
-				if (ModelState.IsValid)
-				{
-					try
-					{
-						_context.Update(project);
-						await _context.SaveChangesAsync();
-					}
-					catch (DbUpdateConcurrencyException)
-					{
-						if (!ProjectExists(project.Id))
-						{
-							return NotFound();
-						}
-						else
-						{
-							throw;
-						}
-					}
-					return RedirectToAction(nameof(Index));
-				}
-
-				// Authorize PM to edit this project
-				if (!User.IsInRole("Administrator"))
-				{
-					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-					if (userId != project.ProjectOwnerId)
-					{
-						return Unauthorized();
-					}
-				}
-				return View(project);
-			}
-
-			// GET: Projects/Delete/5
-			[Authorize(Roles = "Administrator, Project Manager")]
-			public async Task<IActionResult> Delete(int? id)
+			if (ModelState.IsValid)
 			{
-				if (id == null)
+				try
 				{
-					return NotFound();
+					_context.Update(project);
+					await _context.SaveChangesAsync();
 				}
-
-				var project = await _context.Project
-						.FirstOrDefaultAsync(m => m.Id == id);
-				if (project == null)
+				catch (DbUpdateConcurrencyException)
 				{
-					return NotFound();
-				}
-
-				// Authorize PM to edit this project
-				if (!User.IsInRole("Administrator"))
-				{
-					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-					if (userId != project.ProjectOwnerId)
+					if (!ProjectExists(project.Id))
 					{
-						return Unauthorized();
+						return NotFound();
+					}
+					else
+					{
+						throw;
 					}
 				}
-
-				return View(project);
-			}
-
-			// POST: Projects/Delete/5
-			[Authorize(Roles = "Administrator, Project Manager")]
-			[HttpPost, ActionName("Delete")]
-			[ValidateAntiForgeryToken]
-			public async Task<IActionResult> DeleteConfirmed(int id)
-			{
-				var project = await _context.Project.FindAsync(id);
-
-				// Authorize PM to edit this project
-				if (!User.IsInRole("Administrator"))
-				{
-					var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-					if (userId != project.ProjectOwnerId)
-					{
-						return Unauthorized();
-					}
-				}
-
-				_context.Project.Remove(project);
-				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}
 
-	private bool ProjectExists(int id)
-	{
-		return _context.Project.Any(e => e.Id == id);
+			// Authorize PM to edit this project
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.ProjectOwnerId)
+				{
+					return Unauthorized();
+				}
+			}
+			return View(project);
+		}
+
+		// GET: Projects/Delete/5
+		[Authorize(Roles = "Administrator, Project Manager")]
+		public async Task<IActionResult> Delete(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var project = await _context.Project
+					.FirstOrDefaultAsync(m => m.Id == id);
+			if (project == null)
+			{
+				return NotFound();
+			}
+
+			// Authorize PM to edit this project
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.ProjectOwnerId)
+				{
+					return Unauthorized();
+				}
+			}
+
+			return View(project);
+		}
+
+		// POST: Projects/Delete/5
+		[Authorize(Roles = "Administrator, Project Manager")]
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var project = await _context.Project.FindAsync(id);
+
+			// Authorize PM to edit this project
+			if (!User.IsInRole("Administrator"))
+			{
+				var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+				if (userId != project.ProjectOwnerId)
+				{
+					return Unauthorized();
+				}
+			}
+
+			_context.Project.Remove(project);
+
+			var tickets = await _context.Ticket
+				.Where(t => t.ParentProjectId == id)
+				.ToListAsync();
+
+			foreach (Ticket t in tickets)
+			{
+				var comments = await _context.Comment
+					.Where(c => c.ParentTicketId == t.Id)
+					.ToListAsync();
+
+				foreach (Comment c in comments)
+				{
+					_context.Comment.Remove(c);
+				}
+
+				_context.Ticket.Remove(t);
+			}
+
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
+
+		private bool ProjectExists(int id)
+		{
+			return _context.Project.Any(e => e.Id == id);
+		}
 	}
 }
-	}

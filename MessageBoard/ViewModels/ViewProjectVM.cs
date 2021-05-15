@@ -8,6 +8,8 @@ namespace TicketTracker.ViewModels
 		public Ticket Ticket { get; set; }
 		public DataPage<Ticket> DataPage { get; set; }
 
+		public bool UserCanEditProject { get; set; }
+
 		//public string[] CategoryValues = Enum.GetNames(typeof(Ticket.CategoryEnum));
 
 		/*

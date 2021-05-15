@@ -2,13 +2,9 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 /* from the accounts page */
+
 #body-content {
 	margin-bottom: 32px;
-}
-
-h2 {
-	padding-top: 36px;
-	padding-bottom: 24px;
 }
 
 .pagination .page-item {
@@ -37,6 +33,7 @@ h2 {
 	border-radius: .25rem;
 }
 
+/*
 :root {
 	--textColor: #231f20;
 	--dkGray: #364747;
@@ -162,9 +159,6 @@ h2 {
   --link: #0645AD;
 }
 */
-.comment {
-	border-bottom: 2px solid var(--dkGray) !important;
-}
 
 .break-long-words {
 	word-wrap: hyphenate;
@@ -178,9 +172,6 @@ h2 {
 	width: 50%;
 }
 
-.bug-container {
-	padding: 25px;
-}
 
 a.navbar-brand {
 	white-space: normal;
@@ -188,57 +179,6 @@ a.navbar-brand {
 	word-break: break-all;
 }
 
-a {
-	text-decoration: underline;
-	color: var(--link);
-}
-
-	a:hover {
-		color: var(--link-hover);
-	}
-
-.btn-primary {
-	color: #fff;
-	border-color: var(--textColor);
-}
-
-.section {
-	padding: 1%;
-	background: var(--ltGray);
-	border-bottom: 5px solid var(--dkGray);
-	/*
-		box-shadow: 0 2rem .75rem var(--ltGray);
-		*/
-}
-
-.navbar {
-	background: var(--ltGray);
-	border-bottom: 5px solid var(--dkGray) !important;
-	/*background: linear-gradient(180deg, var(--bright) 0%, var(--cta) 100%);*/
-}
-
-.border-left {
-	border-left: 2px solid var(--backgroundColor) !important;
-}
-
-.nav-link {
-	color: var(--link) !important;
-}
-
-	.nav-link:hover {
-		text-decoration: underline;
-		color: var(--link-hover) !important;
-	}
-
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-	color: var(--ltGray);
-	background-color: var(--link);
-	border-color: var(--ltGray);
-}
-
-li {
-	padding-right: 15px;
-}
 
 html {
 	/* font-family: Georgia,serif !important;*/
@@ -258,15 +198,15 @@ body {
 	/* Margin bottom by footer height */
 	word-wrap: break-word;
 	margin-bottom: 60px;
-	background: var(--backgroundColor);
+	/* background: var(--backgroundColor);
 	/*background: linear-gradient(180deg, var(--backgroundColor) 0%, var(--ltGray) 100%);
 	/*
   background: linear-gradient(0deg, rgb(34,193,195) 0%, rgb(139, 199, 200) 100%);
   /*
   background: rgb(34,193,195);
   background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
-  */
-	color: var(--textColor);
+
+	color: var(--textColor);*/
 }
 
 
@@ -278,7 +218,7 @@ body {
 		font-size: 16px;
 	}
 }
-
+/*
 .border-top {
 	border-top: 1px solid var(--textColor);
 }
@@ -316,20 +256,16 @@ button.accept-policy {
 	}
 
 .table-header {
-	color: var(--textColor);
+	color: var(--textColor) !important;
 }
 
 	.table-header:hover {
 		color: var(--mdGray);
+		text-decoration: none;
 	}
 
-	.table-header:active {
-		color: var(--backgroundColor) !important;
-		text-decoration: underline !important;
-	}
 
 	.table-header:active {
-		color: var(--backgroundColor);
 		text-decoration: none;
 	}
 
@@ -341,7 +277,12 @@ button.accept-policy {
 	background: var(--dkGray);
 }
 
+td a, td a :hover {
+	color: rgb(0, 0, 0);
+}
+
 /* overwriting bootstrap styles */
+/*
 table, table td, table th, table thead th {
 	color: var(--textColor);
 	background-color: var(--ltGray);
@@ -353,25 +294,8 @@ label {
 	margin: 0px;
 	height: 10px;
 }
+	*/
 
-/* The sidebar menu */
-.sidebar {
-	transform: translateY(70px);
-	padding: 10px;
-	width: 130px; /* Set the width of the sidebar */
-	position: absolute; /* Fixed Sidebar (stay in place on scroll) */
-	z-index: 1; /* Stay on top */
-	top: 0; /* Stay at the top */
-	left: 0;
-	background-color: var(--backgroundColor);
-	overflow-x: hidden; /* Disable horizontal scroll */
-	padding-top: 20px;
-}
-
-/* Style page content */
-.main {
-	padding: 0px 10px;
-}
 
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
@@ -383,3 +307,62 @@ label {
 			font-size: 18px;
 		}
 }
+
+
+/*
+
+
+.comment {
+	border-bottom: 2px solid var(--dkGray) !important;
+}
+
+a {
+	text-decoration: underline;
+	color: var(--link);
+}
+
+	a:hover {
+		color: var(--link-hover);
+	}
+
+.btn-primary {
+	color: #fff;
+	border-color: var(--textColor);
+}
+
+.section {
+	padding: 1%;
+	background: var(--ltGray);
+	border-bottom: 5px solid var(--dkGray);
+}
+
+.navbar {
+	background: var(--ltGray);
+	border-bottom: 5px solid var(--dkGray) !important;
+	/*background: linear-gradient(180deg, var(--bright) 0%, var(--cta) 100%);*/
+}
+/*
+.border-left {
+	border-left: 2px solid var(--backgroundColor) !important;
+}
+
+.nav-link {
+	color: var(--link) !important;
+}
+
+	.nav-link:hover {
+		text-decoration: underline;
+		color: var(--link-hover) !important;
+	}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+	color: var(--ltGray);
+	background-color: var(--link);
+	border-color: var(--ltGray);
+}
+
+li {
+	padding-right: 15px;
+}
+
+*/

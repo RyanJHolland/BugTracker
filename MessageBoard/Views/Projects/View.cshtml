@@ -100,41 +100,47 @@
 		 asp-action="Create"
 		 asp-route-id="@Model.Project.Id"
 		 class="">
-		Add New Ticket
-	</a>
-	|
+		 <button class="btn btn-sm btn-primary">
+		<i class="fas fa-plus-circle"></i> New Ticket</button></a>
+
 	<!-- edit project link -->
-	<a asp-controller="Projects"
-		 asp-action="Edit"
-		 asp-route-id="@Model.Project.Id">
-		Edit Project
-	</a>
+	@if (Model.UserCanEditProject)
+		{
+				<a asp-controller="Projects"
+						asp-action="Edit"
+						asp-route-id="@Model.Project.Id">
+								 <button class="btn btn-sm btn-secondary">
+		<i class="fas fa-edit"></i> Edit Project</button></a>
+		}
 
 	<!-- search input field -->
-	<form>
-		<div class="input-group">
-			<input type="text" name="filter" class="form-control" placeholder="Search..." value="@Model.DataPage.Filter">
-			<div class="input-group-append">
-					<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-			</div>
-			<!-- other necessary params -->
-			<input type="hidden"
-						 name="PageCount"
-						 value="@Model.DataPage.PageCount"
-						 min="1"
-						 max="99999"
-						 style="width: 40px; height: 20px;" />
-			<input type="hidden"
-						 name="orderByColumn"
-						 value="@Model.DataPage.OrderByColumn" />
-			<input type="hidden"
-						 name="orderDirection"
-						 value="@Model.DataPage.OrderDirection" />
-			<input type="hidden"
-						 name="Filter"
-						 value="@Model.DataPage.Filter" />
-	  </div>
-	</form>
+	<div class="float-right form-inline mb-3">
+			<form>
+				<div class="input-group">
+					<input type="text" name="filter" class="form-control" placeholder="Search..." value="@Model.DataPage.Filter">
+					<div class="input-group-append">
+							<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+					</div>
+					<a href="?" history="set" class="btn btn-light ml-2"><i class="fa fa-times"></i></a>
+					<!-- other necessary params -->
+					<input type="hidden"
+								 name="PageCount"
+								 value="@Model.DataPage.PageCount"
+								 min="1"
+								 max="99999"
+								 style="width: 40px; height: 20px;" />
+					<input type="hidden"
+								 name="orderByColumn"
+								 value="@Model.DataPage.OrderByColumn" />
+					<input type="hidden"
+								 name="orderDirection"
+								 value="@Model.DataPage.OrderDirection" />
+					<input type="hidden"
+								 name="Filter"
+								 value="@Model.DataPage.Filter" />
+				</div>
+			</form>
+	</div>
 
 	<!-- ticket count display -->
 	<form>
@@ -179,7 +185,10 @@
 					 value="@Model.DataPage.Filter" />
 	</form>
 
+
 	<!-- Previous / Next Page links-->
+	@if (Model.DataPage.PageSize < Model.DataPage.FilteredCount)
+	{
 	<div class="page-controls">
 		<!-- Previous Page link -->
 		@if (Model.DataPage.CurrentPage > 1)
@@ -193,15 +202,12 @@
 	 asp-route-orderDirection="@Model.DataPage.OrderDirection"
 	 asp-route-currentPage="@(Model.DataPage.CurrentPage - 1)"
 	 alt="previous page of results">
-	Previous Page
-</a>
+	<button class="btn btn-sm btn-outline-secondary"><i class="fas fa-arrow-left"></i></button></a>
 } else {
-	<span class="text-muted">Previous Page</span>
+	 <button class="btn btn-sm btn-outline-secondary disabled"><i class="fas fa-arrow-left"></i></button>
 }
-<!-- Divider line -->
-|
 		<!-- Next Page link -->
-		@if (((Model.DataPage.CurrentPage + 1) * Model.DataPage.PageSize <= Model.DataPage.FilteredCount))
+		@if (((Model.DataPage.CurrentPage ) * Model.DataPage.PageSize < Model.DataPage.FilteredCount))
 		{
 <a asp-controller="Projects"
 	 asp-action="View"
@@ -212,19 +218,23 @@
 	 asp-route-orderDirection="@Model.DataPage.OrderDirection"
 	 asp-route-currentPage="@(Model.DataPage.CurrentPage + 1)"
 	 alt="next page of results">
-	Next Page
+	<button class="btn btn-sm btn-outline-secondary ">
+	<i class="fas fa-arrow-right"></i></button>
 </a>
 } else {
-	<span class="text-muted">Next Page</span>
-}
+	<button class="btn btn-sm btn-outline-secondary disabled">
+		<i class="fas fa-arrow-right"></i></button>
+	}
 	</div>
+	}
 
 	<!-- The actual search results table -->
 	<table class="table">
 		<!-- Header row -->
 		<thead>
 			<tr>
-				<!-- Category -->
+
+				<!-- table header for Category -->
 				<th class="text-nowrap">
 					<a class="table-header"
 						 asp-controller="Projects"
@@ -240,15 +250,21 @@
 						{
 							if (Model.DataPage.OrderDirection == "ASC")
 							{
-								@:&#9650;
+								<i class="fas fa-sort-up"></i>
 							}
 							else
 							{
-								@:&#9660;
+								<i class="fas fa-sort-down"></i>
 							}
-						}
+						}	else
+							{
+								<img src="\img\sort.png" style="width:10px;"></img>
+							}
 					</a>
 				</th>
+
+
+				<!-- table header for Title -->
 				<th class="text-nowrap">
 					<a class="table-header"
 						 asp-controller="Projects"
@@ -264,15 +280,21 @@
 						{
 							if (Model.DataPage.OrderDirection == "ASC")
 							{
-								@:&#9650;
+								<i class="fas fa-sort-up"></i>
 							}
 							else
 							{
-								@:&#9660;
+								<i class="fas fa-sort-down"></i>
 							}
-						}
+						}	else
+							{
+								<img src="\img\sort.png" style="width:10px;"></img>
+							}
 					</a>
 				</th>
+
+
+				<!-- table header for Status -->
 				<th class="text-nowrap">
 					<a class="table-header"
 						 asp-controller="Projects"
@@ -288,15 +310,21 @@
 						{
 							if (Model.DataPage.OrderDirection == "ASC")
 							{
-								@:&#9650;
+								<i class="fas fa-sort-up"></i>
 							}
 							else
 							{
-								@:&#9660;
+								<i class="fas fa-sort-down"></i>
 							}
-						}
+						}	else
+							{
+								<img src="\img\sort.png" style="width:10px;"></img>
+							}
 					</a>
 				</th>
+
+
+				<!-- table header for Priority -->
 				<th class="text-nowrap">
 					<a class="table-header"
 						 asp-controller="Projects"
@@ -312,15 +340,21 @@
 						{
 							if (Model.DataPage.OrderDirection == "ASC")
 							{
-								@:&#9650;
+								<i class="fas fa-sort-up"></i>
 							}
 							else
 							{
-								@:&#9660;
+								<i class="fas fa-sort-down"></i>
 							}
-						}
+						}	else
+							{
+								<img src="\img\sort.png" style="width:10px;"></img>
+							}
 					</a>
 				</th>
+
+
+				<!-- table header for UserName -->
 				<th class="text-nowrap">
 					<a class="table-header"
 						 asp-controller="Projects"
@@ -336,15 +370,20 @@
 						{
 							if (Model.DataPage.OrderDirection == "ASC")
 							{
-								@:&#9650;
+								<i class="fas fa-sort-up"></i>
 							}
 							else
 							{
-								@:&#9660;
+								<i class="fas fa-sort-down"></i>
 							}
-						}
+						}	else
+							{
+								<img src="\img\sort.png" style="width:10px;"></img>
+							}
 					</a>
 				</th>
+
+				<!-- table header for CreationTime -->
 				<th class="text-nowrap">
 					<a class="table-header"
 						 asp-controller="Projects"
@@ -360,25 +399,39 @@
 						{
 							if (Model.DataPage.OrderDirection == "ASC")
 							{
-								@:&#9650;
+								<i class="fas fa-sort-up"></i>
 							}
 							else
 							{
-								@:&#9660;
+								<i class="fas fa-sort-down"></i>
 							}
-						}
+						}	else
+							{
+								<img src="\img\sort.png" style="width:10px;"></img>
+							}
 					</a>
 				</th>
 			</tr>
 		</thead>
+
+
 		<tbody>
 			<!-- the code below runs for each ticket -->
 			@foreach (var ticket in Model.DataPage.Items)
 			{
 		<!-- a row of the table, representing one ticket -->
 <tr>
-		<!-- Ticket row: Category column value -->
+		<!-- Ticket row: Category column -->
 	<td>
+		<!-- category -->
+		@ticket.Category
+
+						<!-- Category input -->
+						@*
+						<div class="form-group">
+					@Html.DropDownListFor(m => ticket.Category, new SelectList(Enum.GetValues(typeof(Ticket.CategoryEnum))))
+					<span asp-validation-for="Ticket.Category" class="text-danger"></span>
+				</div>
 		@* <div class="dropdown">
 			<button class="btn btn-secondary dropdown-toggle" type="button" id="CategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				@Html.DisplayFor(modelItem => ticket.Category)
@@ -405,7 +458,9 @@
 		<!-- ticket title column -->
 	<td>
 		<a asp-controller="Tickets" asp-action="View" asp-route-id="@ticket.Id">
-			@Html.DisplayFor(modelItem => ticket.Title)
+			<div style="height:100%;width:100%;">
+				@Html.DisplayFor(modelItem => ticket.Title)
+			</div>
 		</a>
 	</td>
 		<!-- ticket status column -->
@@ -428,3 +483,48 @@
 		</tbody>
 	</table>
 </div>
+
+
+
+
+	<!-- Previous / Next Page links-->
+	@if (Model.DataPage.PageSize < Model.DataPage.FilteredCount)
+	{
+	<div class="page-controls">
+		<!-- Previous Page link -->
+		@if (Model.DataPage.CurrentPage > 1)
+		{
+<a asp-controller="Projects"
+	 asp-action="View"
+	 asp-route-id="@Model.Project.Id"
+	 asp-route-pageSize="@Model.DataPage.PageSize"
+	 asp-route-filter="@Model.DataPage.Filter"
+	 asp-route-orderByColumn="@Model.DataPage.OrderByColumn"
+	 asp-route-orderDirection="@Model.DataPage.OrderDirection"
+	 asp-route-currentPage="@(Model.DataPage.CurrentPage - 1)"
+	 alt="previous page of results">
+	<button class="btn btn-sm btn-outline-secondary"><i class="fas fa-arrow-left"></i></button></a>
+} else {
+	 <button class="btn btn-sm btn-outline-secondary disabled"><i class="fas fa-arrow-left"></i></button>
+}
+		<!-- Next Page link -->
+		@if (((Model.DataPage.CurrentPage ) * Model.DataPage.PageSize < Model.DataPage.FilteredCount))
+		{
+<a asp-controller="Projects"
+	 asp-action="View"
+	 asp-route-id="@Model.Project.Id"
+	 asp-route-pageSize="@Model.DataPage.PageSize"
+	 asp-route-filter="@Model.DataPage.Filter"
+	 asp-route-orderByColumn="@Model.DataPage.OrderByColumn"
+	 asp-route-orderDirection="@Model.DataPage.OrderDirection"
+	 asp-route-currentPage="@(Model.DataPage.CurrentPage + 1)"
+	 alt="next page of results">
+	<button class="btn btn-sm btn-outline-secondary ">
+	<i class="fas fa-arrow-right"></i></button>
+</a>
+} else {
+	<button class="btn btn-sm btn-outline-secondary disabled">
+		<i class="fas fa-arrow-right"></i></button>
+	}
+	</div>
+	}
