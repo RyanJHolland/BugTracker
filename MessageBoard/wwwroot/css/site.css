@@ -276,10 +276,13 @@ button.accept-policy {
 .cta {
 	background: var(--dkGray);
 }
-
+/*
 td a, td a :hover {
-	color: rgb(0, 0, 0);
+	color: rgb(0 0 0);
 }
+
+*/
+
 
 /* overwriting bootstrap styles */
 /*

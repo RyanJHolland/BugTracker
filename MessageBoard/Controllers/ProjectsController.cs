@@ -50,7 +50,21 @@ namespace TicketTracker.Controllers
 			int pageSize = 10,
 			string filter = null,
 			string orderDirection = "DESC",
-			string orderByColumn = "CreationTime"
+			string orderByColumn = "CreationTime",
+			string AllCategories = "on",
+			string Bug = "on",
+			string Feature = "on",
+			string Style = "on",
+			string Change = "on",
+			string AllPriorities = "on",
+			string Critical = "on",
+			string High = "on",
+			string Medium = "on",
+			string Low = "on",
+			string AllStatuses = "off",
+			string Open = "on",
+			string Resolved = "off",
+			string Cancelled = "off"
 			)
 		{
 			if (id == null)
@@ -70,10 +84,23 @@ namespace TicketTracker.Controllers
 				.Where(t => t.ParentProjectId == id)
 				.AsQueryable();
 
+			// Apply filters	
+			if (Bug == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Bug)); }
+			if (Feature == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Feature)); }
+			if (Style == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Style)); }
+			if (Change == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Change)); }
+			if (Critical == "off") { query = query.Where(t => !t.Priority.Equals(Ticket.PriorityEnum.Critical)); }
+			if (High == "off") { query = query.Where(t => !t.Priority.Equals(Ticket.PriorityEnum.High)); }
+			if (Medium == "off") { query = query.Where(t => !t.Priority.Equals(Ticket.PriorityEnum.Medium)); }
+			if (Low == "off") { query = query.Where(t => !t.Priority.Equals(Ticket.PriorityEnum.Low)); }
+			if (Open == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Open)); }
+			if (Resolved == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Resolved)); }
+			if (Cancelled == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Cancelled)); }
+
 			// Get count of all tickets in project
 			var fullCount = await query.CountAsync();
 
-			// Add search filter to query
+			// Add search string filter to query
 			if (!String.IsNullOrWhiteSpace(filter))
 			{
 				query = query

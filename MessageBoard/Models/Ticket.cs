@@ -24,6 +24,7 @@ namespace TicketTracker.Models
 		public string UserName { get; set; }
 
 		[Display(Name = "Created")]
+		[DisplayFormat(DataFormatString = "{0:MMM d, yyyy h:mm tt K}")]
 		public DateTime CreationTime { get; set; }
 
 		[Display(Name = "Project Id")]
