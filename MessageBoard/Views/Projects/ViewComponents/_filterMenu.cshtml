@@ -1,0 +1,120 @@
+﻿<!-- filter menu -->
+<div class="">
+	<form id="filterForm" class="" method="GET">
+		<div class="row">
+			<!-- filter for Category -->
+			<div class="form-group p-2 mb-0 pb-0 border-right">
+				<b>Category</b>
+				<br>
+				@if(ViewContext.HttpContext.Request.Query["AllCategories"] == "on") {
+					<input 
+						type="checkbox" 
+						id="AllCategories" 
+						name="AllCategories"checked >
+				} else {
+					<input 
+						type="checkbox" 
+						id="AllCategories" 
+						name="AllCategories" 
+						 > 
+				}
+			<label for="AllCategories" style="height:10px;">
+				(Select all)
+			</label>
+				@foreach (var x in typeof(Ticket.CategoryEnum).GetEnumValues())
+				{
+					<br>
+					@if(ViewContext.HttpContext.Request.Query[x.ToString()] == "off") {
+						<input type="checkbox" id="@x" class="CategoryCheckbox" name="@x" > 
+					} else {
+						<input type="checkbox" id="@x" class="CategoryCheckbox" name="@x" checked> 
+					}
+					<input type="hidden" name="@x" value="off"> /* This is needed because an unchecked checkbox does not show up in the query params. */
+					<label for="@x" style="height:10px;">@x</label>
+				}
+			</div>
+			<!-- filter for Status -->
+			<div class="form-group p-2 mb-0 pb-0 border-right">
+				<b>Status</b>
+				<br>
+				@if(ViewContext.HttpContext.Request.Query["AllStatuses"] == "on") {
+					<input 
+						type="checkbox" 
+						id="AllStatuses" 
+						name="AllStatuses"checked >
+				} else {
+					<input 
+						type="checkbox" 
+						id="AllStatuses" 
+						name="AllStatuses" 
+						 > 
+				}<label for="AllStatuses" style="height:10px;"> (Select all)</label>
+				@foreach (var x in typeof(Ticket.StatusEnum).GetEnumValues())
+				{
+					<br>
+					@* If the query string includes that the checkbox is marked off, mark it off by not including "checked" in the <input>: *@ 
+					@if (
+						(ViewContext.HttpContext.Request.Query[x.ToString()] == "off" )
+						||
+						@* If the query string does not include the value, we mark it checked, because all of them default to on/checked, except for Resolved and Cancelled tickets, which we filter by default: *@ 
+						(
+							(x.ToString() == "Resolved" || x.ToString() == "Cancelled") 
+							&& 
+							!ViewContext.HttpContext.Request.Query.ContainsKey(x.ToString())
+						)
+					) 
+					{
+						<input type="checkbox" id="@x" class="StatusCheckbox" name="@x"> 
+					} 
+					else 
+					{
+						<input type="checkbox" id="@x" class="StatusCheckbox" name="@x" checked> 
+					}
+					<input type="hidden" name="@x" value="off">
+					<label for="@x" style="height:10px;">@x</label>
+				}
+			</div>
+			<!-- filter for Priority -->
+			<div class="form-group p-2 mb-0 pb-0">
+				<b>Priority</b>
+				<br>
+				@if(ViewContext.HttpContext.Request.Query["AllPriorities"] == "on") {
+					<input 
+						type="checkbox" 
+						id="AllPriorities" 
+						name="AllPriorities"checked >
+				} else {
+					<input 
+						type="checkbox" 
+						id="AllPriorities" 
+						name="AllPriorities" 
+						 > 
+				}<label for="AllPriorities" style="height:10px;"> (Select all)</label>
+				@foreach (var x in typeof(Ticket.PriorityEnum).GetEnumValues())
+				{
+				<br>
+					@if(ViewContext.HttpContext.Request.Query[x.ToString()] == "off") {
+						<input type="checkbox" id="@x" class="PriorityCheckbox" name="@x" > 
+					} else {
+						<input type="checkbox" id="@x" class="PriorityCheckbox" name="@x" checked> 
+					}
+					<input type="hidden" name="@x" value="off">
+					<label for="@x" style="height:10px;">@x</label>
+				}
+			</div>
+		</div>
+		<!-- other necessary params -->
+		<input type="hidden"
+						name="PageCount"
+						value="@Model.DataPage.PageCount"/>
+		<input type="hidden"
+						name="orderByColumn"
+						value="@Model.DataPage.OrderByColumn" />
+		<input type="hidden"
+						name="orderDirection"
+						value="@Model.DataPage.OrderDirection" />
+		<input type="hidden"
+						name="Filter"
+						value="@Model.DataPage.Filter" />
+	</form>
+</div>

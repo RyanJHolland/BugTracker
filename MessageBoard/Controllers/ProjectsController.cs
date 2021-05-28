@@ -62,6 +62,7 @@ namespace TicketTracker.Controllers
 			string Medium = "on",
 			string Low = "on",
 			string AllStatuses = "off",
+			string Unassigned = "on",
 			string Open = "on",
 			string Resolved = "off",
 			string Cancelled = "off"
@@ -84,7 +85,7 @@ namespace TicketTracker.Controllers
 				.Where(t => t.ParentProjectId == id)
 				.AsQueryable();
 
-			// Apply filters	
+			// Apply filters
 			if (Bug == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Bug)); }
 			if (Feature == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Feature)); }
 			if (Style == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Style)); }
@@ -94,6 +95,7 @@ namespace TicketTracker.Controllers
 			if (Medium == "off") { query = query.Where(t => !t.Priority.Equals(Ticket.PriorityEnum.Medium)); }
 			if (Low == "off") { query = query.Where(t => !t.Priority.Equals(Ticket.PriorityEnum.Low)); }
 			if (Open == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Open)); }
+			if (Unassigned == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Unassigned)); }
 			if (Resolved == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Resolved)); }
 			if (Cancelled == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Cancelled)); }
 

@@ -57,6 +57,7 @@ namespace TicketTracker.Models
 
 		public enum StatusEnum
 		{
+			Unassigned,
 			Open,
 			Resolved,
 			Cancelled

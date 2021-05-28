@@ -1,0 +1,95 @@
+﻿<!-- filter menu -->
+<div class="dropdown">
+	<button class="btn btn-sm btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		<i class="fas fa-filter"></i> Filters
+	</button>
+	<form class="dropdown-menu p-4" method="GET">
+		<div class="row">
+			<!-- filter for Category -->
+			<div class="form-group p-2 border-right">
+				<b>Category</b>
+				<br>
+			<input type="checkbox" id="AllCategories" name="AllCategories" onclick="toggleAll(this, 'Categories')" checked><label for="AllCategories">All</label><br>
+							
+				@foreach (var x in typeof(Ticket.CategoryEnum).GetEnumValues())
+				{
+					@if(ViewContext.HttpContext.Request.Query[x.ToString()] == "off") {
+						<input type="checkbox" id="@x" name="@x" onclick="updateToggleAll('Categories')"> 
+					} else {
+						<input type="checkbox" id="@x" name="@x" onclick="updateToggleAll('Categories')" checked> 
+					}
+					<input type="hidden" name="@x" value="off"> /* This is needed because an unchecked checkbox does not show up in the query params. */
+					<label for="@x" style="height:10px;">@x</label>
+					<br>
+				}
+			</div>
+			<!-- filter for Status -->
+			<div class="form-group p-2 border-right">
+				<b>Status</b>
+				<br>
+				<input type="checkbox" id="AllStatuses" name="AllStatuses" onclick="toggleAll(this, 'Statuses')"><label for="AllStatuses">All</label><br>
+				@foreach (var x in typeof(Ticket.StatusEnum).GetEnumValues())
+				{
+					@* If the query string includes that the checkbox is marked off, mark it off by not including "checked" in the <input>: *@ 
+					@if (
+						(ViewContext.HttpContext.Request.Query[x.ToString()] == "off" )
+						||
+						@* If the query string does not include the value, we mark it checked, because all of them default to on/checked, except for Resolved and Cancelled tickets, which we filter by default: *@ 
+						(
+							(x.ToString() == "Resolved" || x.ToString() == "Cancelled") 
+							&& 
+							!ViewContext.HttpContext.Request.Query.ContainsKey(x.ToString())
+						)
+					) 
+					{
+						<input type="checkbox" id="@x" name="@x" onclick="updateToggleAll('Statuses')"> 
+					} 
+					else 
+					{
+						<input type="checkbox" id="@x" name="@x" onclick="updateToggleAll('Statuses')" checked> 
+					}
+					<input type="hidden" name="@x" value="off">
+					<label for="@x" style="height:10px;">@x</label>
+					<br>
+				}
+			</div>
+			<!-- filter for Priority -->
+			<div class="form-group p-2">
+				<b>Priority</b>
+				<br>
+				<input type="checkbox" id="AllPriorities" name="AllPriorities" onclick="toggleAll(this, 'Priorities')" checked><label for="AllPriorities">All</label><br>
+				@foreach (var x in typeof(Ticket.PriorityEnum).GetEnumValues())
+				{
+					@if(ViewContext.HttpContext.Request.Query[x.ToString()] == "off") {
+						<input type="checkbox" id="@x" name="@x" onclick="updateToggleAll('Priorities')"> 
+					} else {
+						<input type="checkbox" id="@x" name="@x" onclick="updateToggleAll('Priorities')" checked> 
+					}
+					<input type="hidden" name="@x" value="off">
+					<label for="@x" style="height:10px;">@x</label>
+					<br>
+				}
+			</div>
+		</div>
+		<!-- buttons -->
+		<div>
+			<!-- button that reloads page with chosen filters -->
+			<button type="submit" class="btn btn-primary" label="Apply filters"><i class="far fa-thumbs-up"></i> Apply</button>
+			<!--button that clears all filters -->
+			<a href="?" history="set" class="btn btn-default ml-2" label="Reset filters to default"><i class="fa fa-times"></i> Reset</a>
+		</div>
+		<!-- other necessary params -->
+		<input type="hidden"
+						name="PageCount"
+						value="@Model.DataPage.PageCount"/>
+		<input type="hidden"
+						name="orderByColumn"
+						value="@Model.DataPage.OrderByColumn" />
+		<input type="hidden"
+						name="orderDirection"
+						value="@Model.DataPage.OrderDirection" />
+		<input type="hidden"
+						name="Filter"
+						value="@Model.DataPage.Filter" />
+	</form>
+</div>

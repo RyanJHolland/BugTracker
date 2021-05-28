@@ -1,0 +1,10 @@
+﻿
+<!-- edit project link -->
+	&nbsp;
+@if (Model.UserCanEditProject)
+{
+	<a asp-controller="Projects"
+			asp-action="Edit"
+			asp-route-id="@Model.Project.Id">
+		<button class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i> Edit Project</button></a>
+}

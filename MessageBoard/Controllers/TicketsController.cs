@@ -89,7 +89,7 @@ namespace TicketTracker.Controllers
 			};
 			vm.Ticket.Priority = Ticket.PriorityEnum.Medium;
 			vm.Ticket.Category = Ticket.CategoryEnum.Bug;
-			vm.Ticket.Status = Ticket.StatusEnum.Open;
+			vm.Ticket.Status = Ticket.StatusEnum.Unassigned;
 
 			return View(vm);
 		}

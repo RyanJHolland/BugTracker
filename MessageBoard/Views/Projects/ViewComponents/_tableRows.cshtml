@@ -1,0 +1,116 @@
+﻿@using System.Linq;
+@model TicketTracker.ViewModels.ViewProjectVM
+
+
+<tbody class="text-nowrap">
+	@foreach (var ticket in Model.DataPage.Items)
+	{
+		<!-- a row of the table, representing one ticket -->
+		<tr>
+		
+			<!-- Ticket row: Category column -->
+			<td>
+				<!-- category -->
+				@if (ticket.Category.ToString() == "Bug")
+				{
+					<div class="categoryDiv" style="color: #451500; background-color: #ffc2a8;">
+						<i class="fas fa-bug p-1"></i> 
+						@ticket.Category
+					</div>
+				} 
+				else if (ticket.Category.ToString() == "Feature")
+				{
+					<div class="categoryDiv" style="color: #004007; background-color: #a8ffb1;">
+						<i class="fas fa-cog p-1"></i> 
+						@ticket.Category
+				</div>
+				} 
+				else if (ticket.Category.ToString() == "Style")
+				{
+					<div class="categoryDiv" style="color: #003047; background-color: #a2ddfa;">
+						<i class="fas fa-palette p-1"></i> 
+						@ticket.Category
+					</div>
+				} 
+				else if (ticket.Category.ToString() == "Change")
+				{
+					<div class="categoryDiv" style="color: #383800; background-color: #ffffa3;">
+						<i class="fas fa-lightbulb p-1"></i> 
+						@ticket.Category
+					</div>
+				} 
+				else
+				{
+					<div class="categoryDiv" style="background-color: gray;">
+						@ticket.Category
+					</div>
+				}
+
+						<!-- Category input: experimental feature of being able to edit category from the View page with a dropdown. Not implemented currently. -->
+						@*
+						<div class="form-group">
+					@Html.DropDownListFor(m => ticket.Category, new SelectList(Enum.GetValues(typeof(Ticket.CategoryEnum))))
+					<span asp-validation-for="Ticket.Category" class="text-danger"></span>
+				</div>
+					@* <div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle" type="button" id="CategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							@Html.DisplayFor(modelItem => ticket.Category)
+						</button>
+						<div class="dropdown-menu" aria-labelledby="CategoryDropdown">
+							<form asp-controller="Tickets" asp-action="Edit" method="post">
+							@for (int i = 0; i < Model.CategoryValues.Length; i++)
+							{
+								<input type="hidden" name="redirectURL" value="@Url.PageLink()">
+								<input type="hidden" name="id" value="@ticket.Id">
+								<input type="hidden" name="Title" value="@ticket.Title">
+								<input type="hidden" name="Body" value="@ticket.Body">
+								<input type="hidden" name="Priority" value="@ticket.Priority">
+								<input type="hidden" name="Category" value="@i">
+								<input type="hidden" name="Status" value="@ticket.Status">
+								 <button class="dropdown-item" type="submit">
+									 @Model.CategoryValues.ElementAt(i)
+							 </button>
+							}
+							</form>
+						</div>
+					</div> *@
+			</td>
+
+			<!-- ticket title column -->
+			<td>
+				<a asp-controller="Tickets" asp-action="View" asp-route-id="@ticket.Id">
+					<div style="height:100%;width:100%;">
+						@Html.DisplayFor(modelItem => ticket.Title)
+					</div>
+				</a>
+			</td>
+		
+			<!-- ticket status column -->
+			<td>
+				@Html.DisplayFor(modelItem => ticket.Status)
+			</td>
+		
+			<!-- ticket priority column -->
+				@if (ticket.Priority.ToString() == "Critical") {
+					<td style="color:red;">
+						@Html.DisplayFor(modelItem => ticket.Priority)
+					</td>
+				} else {
+					<td>
+						@Html.DisplayFor(modelItem => ticket.Priority)
+					</td>
+				}
+		
+			<!-- ticket owner name column -->
+			<td>
+				@Html.DisplayFor(modelItem => ticket.UserName)
+			</td>
+
+			<!-- ticket creation timestamp column -->
+			<td>
+				@Html.DisplayFor(modelItem => ticket.CreationTime)
+			</td>
+
+		</tr>
+	}
+</tbody>

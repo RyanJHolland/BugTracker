@@ -1,0 +1,19 @@
+﻿<!-- tickets on current page -->
+Viewing 
+	@(
+		Model.DataPage.FilteredCount == 0
+			? 0
+			: (
+					Model.DataPage.CurrentPage == 1
+						? 1
+						: Model.DataPage.PageSize * (Model.DataPage.CurrentPage - 1) + 1
+				)
+				+ "-" +
+				(
+					Model.DataPage.PageSize * Model.DataPage.CurrentPage >= Model.DataPage.FilteredCount
+						? Model.DataPage.FilteredCount
+						: Model.DataPage.PageSize * Model.DataPage.CurrentPage
+				)
+	)
+	<!-- total tickets in query -->
+	of @Model.DataPage.FilteredCount tickets.

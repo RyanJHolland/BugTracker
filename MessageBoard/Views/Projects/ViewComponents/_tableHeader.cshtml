@@ -1,0 +1,189 @@
+﻿@using System.Linq;
+@model TicketTracker.ViewModels.ViewProjectVM
+
+<!-- Header row -->
+<thead>
+	<tr>
+		<!-- table header for Category -->
+		<th class="text-nowrap">
+			<a class="table-header"
+					asp-controller="Projects"
+					asp-action="View"
+					asp-route-id="@Model.Project.Id"
+					asp-route-pageSize="@Model.DataPage.PageSize"
+					asp-route-filter="@Model.DataPage.Filter"
+					asp-route-orderByColumn="Category"
+					asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "Category" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+					alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].Category)">
+				@Html.DisplayNameFor(model => model.DataPage.Items[0].Category)
+				@if (Model.DataPage.OrderByColumn == "Category")
+				{
+					if (Model.DataPage.OrderDirection == "ASC")
+					{
+						<i class="fas fa-sort-up"></i>
+					}
+					else
+					{
+						<i class="fas fa-sort-down"></i>
+					}
+				}	else
+					{
+						<img src="\img\sort.png" style="width:10px;"></img>
+					}
+			</a>
+		</th>
+
+
+		<!-- table header for Title -->
+		<th class="text-nowrap">
+			<a class="table-header"
+					asp-controller="Projects"
+					asp-action="View"
+					asp-route-id="@Model.Project.Id"
+					asp-route-pageSize="@Model.DataPage.PageSize"
+					asp-route-filter="@Model.DataPage.Filter"
+					asp-route-orderByColumn="Title"
+					asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "Title" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+					alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].Title)">
+				@Html.DisplayNameFor(model => model.DataPage.Items[0].Title)
+				@if (Model.DataPage.OrderByColumn == "Title")
+				{
+					if (Model.DataPage.OrderDirection == "ASC")
+					{
+						<i class="fas fa-sort-up"></i>
+					}
+					else
+					{
+						<i class="fas fa-sort-down"></i>
+					}
+				}	else
+					{
+						<img src="\img\sort.png" style="width:10px;"></img>
+					}
+			</a>
+		</th>
+
+
+		<!-- table header for Status -->
+		<th class="text-nowrap">
+			<a class="table-header"
+					asp-controller="Projects"
+					asp-action="View"
+					asp-route-id="@Model.Project.Id"
+					asp-route-pageSize="@Model.DataPage.PageSize"
+					asp-route-filter="@Model.DataPage.Filter"
+					asp-route-orderByColumn="Status"
+					asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "Status" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+					alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].Status)">
+						 					@Html.DisplayNameFor(model => model.DataPage.Items[0].Status)
+
+
+										@if (Model.DataPage.OrderByColumn == "Status")
+				{
+					if (Model.DataPage.OrderDirection == "ASC")
+					{
+						<i class="fas fa-sort-up"></i>
+					}
+					else
+					{
+						<i class="fas fa-sort-down"></i>
+					}
+				}	else
+					{
+						<img src="\img\sort.png" style="width:10px;"></img>
+					}
+			</a>
+		</th>
+
+
+		<!-- table header for Priority -->
+		<th class="text-nowrap">
+			<a class="table-header"
+					asp-controller="Projects"
+					asp-action="View"
+					asp-route-id="@Model.Project.Id"
+					asp-route-pageSize="@Model.DataPage.PageSize"
+					asp-route-filter="@Model.DataPage.Filter"
+					asp-route-orderByColumn="Priority"
+					asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "Priority" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+					alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].Priority)">
+				@Html.DisplayNameFor(model => model.DataPage.Items[0].Priority)
+										@if (Model.DataPage.OrderByColumn == "Priority")
+				{
+					if (Model.DataPage.OrderDirection == "ASC")
+					{
+						<i class="fas fa-sort-up"></i>
+					}
+					else
+					{
+						<i class="fas fa-sort-down"></i>
+					}
+				}	else
+					{
+						<img src="\img\sort.png" style="width:10px;"></img>
+					}
+			</a>
+		</th>
+
+
+		<!-- table header for UserName -->
+		<th class="text-nowrap">
+			<a class="table-header"
+					asp-controller="Projects"
+					asp-action="View"
+					asp-route-id="@Model.Project.Id"
+					asp-route-pageSize="@Model.DataPage.PageSize"
+					asp-route-filter="@Model.DataPage.Filter"
+					asp-route-orderByColumn="UserName"
+					asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "UserName" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+					alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].UserName)">
+				@Html.DisplayNameFor(model => model.DataPage.Items[0].UserName)
+										@if (Model.DataPage.OrderByColumn == "UserName")
+				{
+					if (Model.DataPage.OrderDirection == "ASC")
+					{
+						<i class="fas fa-sort-up"></i>
+					}
+					else
+					{
+						<i class="fas fa-sort-down"></i>
+					}
+				}	else
+					{
+						<img src="\img\sort.png" style="width:10px;"></img>
+					}
+			</a>
+		</th>
+
+
+		<!-- table header for CreationTime -->
+		<th class="text-nowrap">
+			<a class="table-header"
+					asp-controller="Projects"
+					asp-action="View"
+					asp-route-id="@Model.Project.Id"
+					asp-route-pageSize="@Model.DataPage.PageSize"
+					asp-route-filter="@Model.DataPage.Filter"
+					asp-route-orderByColumn="CreationTime"
+					asp-route-orderDirection="@(Model.DataPage.OrderByColumn == "CreationTime" && Model.DataPage.OrderDirection == "ASC" ? "DESC" : "ASC")"
+					alt="sort by @Html.DisplayNameFor(model => model.DataPage.Items[0].CreationTime)">
+				@Html.DisplayNameFor(model => model.DataPage.Items[0].CreationTime)
+										@if (Model.DataPage.OrderByColumn == "CreationTime")
+				{
+					if (Model.DataPage.OrderDirection == "ASC")
+					{
+						<i class="fas fa-sort-up"></i>
+					}
+					else
+					{
+						<i class="fas fa-sort-down"></i>
+					}
+				}	else
+					{
+						<img src="\img\sort.png" style="width:10px;"></img>
+					}
+			</a>
+		</th>
+
+	</tr>
+</thead>
