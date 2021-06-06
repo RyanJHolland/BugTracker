@@ -1,0 +1,53 @@
+﻿@using System.Linq;
+@model TicketTracker.ViewModels.ViewProjectVM
+
+@{ ViewData["Title"] = Model.Project.Name; }
+
+<div class="main">
+	<div class="row">
+		<div class="col">
+			<h2 class="mb-header">
+				@Model.Project.Name 
+			</h2>
+			<div>
+				<partial name="ViewComponents/_newTicketButton.cshtml" />
+				<partial name="ViewComponents/_editProjectButton.cshtml" />
+			</div>
+			<div>
+				<partial name="ViewComponents/_ticketCount.cshtml" />
+			</div>
+				<div class="align-bottom">
+				<partial name="ViewComponents/_pageArrows.cshtml"/>
+			</div>
+		</div>
+		<div class="col">
+			<partial name="ViewComponents/_filterMenu.cshtml" />
+		</div>
+		<div class="col wrapper" style="display: grid; grid-template-rows: 25% 25% 25% 25%">
+			<div></div>
+			<div class="d-flex float-right">
+				<partial name="ViewComponents/_searchInput.cshtml" /> 
+			</div>
+			<div class="">
+				<partial name="ViewComponents/_pageSize.cshtml" />
+			</div>
+			<div class="">
+				<!--button that clears search -->
+					<a href="?" history="set" class="btn btn-default p-0 m-0" label="Reset filters to default">
+						<i class="fa fa-times"></i> Reset Filters
+					</a>
+				</div>
+		</div>
+	</div>
+
+	<table class="table">
+		<partial name="ViewComponents/_tableHeader.cshtml" />
+
+		<partial name="ViewComponents/_tableRows.cshtml" />
+	</table>
+
+	<div class="col d-flex justify-content-center">	
+		<partial name="ViewComponents/_pageArrows.cshtml" />
+	</div>
+
+</div>

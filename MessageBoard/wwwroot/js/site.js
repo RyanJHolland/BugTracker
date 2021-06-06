@@ -13,6 +13,11 @@ $(document).ready(function () {
 		$('[data-toggle="popover"]').popover()
 	})
 
+	if (document.getElementById("ShowFilterDropdown").value) {
+		document.getElementById("filter-dropdown-button").click();
+	}
+
+
 	const cols = {
 		"Categories": ["Bug", "Feature", "Style", "Change"],
 		"Statuses": ["Unassigned", "Open", "Resolved", "Cancelled"],
@@ -38,12 +43,9 @@ $(document).ready(function () {
 	const updateFilters = () => {
 		// update the SelectAll checkbox to reflect current reality
 		for (var key in cols) {
-			console.log('checking ' + key);
 			var allSelected = true;
 			for (var ele in cols[key]) {
-				console.log('... checking ' + cols[key][ele]);
 				if (!document.getElementById(cols[key][ele]).checked) {
-					console.log(cols[key][ele] + ' was false');
 					allSelected = false;
 					break;
 				}
@@ -56,8 +58,12 @@ $(document).ready(function () {
 	const checkboxClicked = () => {
 		// step 1: apply the new filters
 		updateFilters();
+
+		// step 1.5: make sure the dropdown menu is open when page reloads
+		document.getElementById("ShowFilterDropdown").value = true;
+
 		// step 2: reload the page with the new filters
-		document.getElementById("filterForm").submit();
+		document.getElementById("project-view-form").submit();
 	}
 
 	// attach event listeners to checkboxes
@@ -72,77 +78,3 @@ $(document).ready(function () {
 
 	updateFilters();
 });
-
-// TRASH //
-/////////
-///////
-/////
-
-/*
-
-
-
-
-
-const Categories = ["Bug", "Feature", "Style", "Change"];
-const Priorities = ["Critical", "High", "Medium", "Low"];
-const Statuses = ["Unassigned", "Open", "Resolved", "Cancelled"];
-const columns = [Categories, Priorities, Statuses];
-
-const linkCheckboxes = (column) => {
-	var checkboxes;
-
-	if (column == "Categories") {
-		checkboxes = Categories;
-	} else if (column == "Priorities") {
-		checkboxes = Priorities;
-	} else if (column == "Statuses") {
-		checkboxes = Statuses;
-	}
-
-	return checkboxes;
-}
-
-
-const toggleAll = (toggle, column) => {
-	var checkboxes = linkCheckboxes(column);
-
-	if (toggle.checked) {
-		for (var x in checkboxes) {
-			document.getElementById(checkboxes[x]).checked = true;
-		}
-	} else {
-		for (var x in checkboxes) {
-			document.getElementById(checkboxes[x]).checked = false;
-		}
-	}
-}
-
-
-const updateToggleAll = (column) => {
-	var checkboxes = linkCheckboxes(column);
-	var allChecked = true;
-	for (var x in checkboxes) {
-		if (!document.getElementById(checkboxes[x]).checked) {
-			allChecked = false;
-			break;
-		}
-	}
-	console.log("column: " + column);
-	if (allChecked) {
-		document.getElementById("All" + column).checked = true;
-	} else {
-		document.getElementById("All" + column).checked = false;
-	}
-}
-
-
-const submitFilters = () => {
-	for (var i in columns) {
-		for (var j in columns[i])
-			updateToggleAll(columns[i][j]);
-	}
-
-	this.form.submit();
-}
-*/

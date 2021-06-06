@@ -1,22 +1,9 @@
-﻿	<!-- ticket count display -->
-<form>
-		<!-- # of tickets to display -->
-		<input type="text"
-						name="PageSize"
-						value="@Model.DataPage.PageSize"
-						min="1"
-						max="99999"
-						class="form-control"
-						style="height: 30px; width: 50px; display:inline-block;"/>
-		<button type="submit" class="btn btn-sm btn-default rounded-right" style="height: 30px; display:inline-block; transform: translateX(-6px) translateY(-3px);"><i class="fa fa-search"></i></button> tickets per page.
-	<!-- other necessary params (orderBy column and direction) -->
-	<input type="hidden"
-					name="orderByColumn"
-					value="@Model.DataPage.OrderByColumn" />
-	<input type="hidden"
-					name="orderDirection"
-					value="@Model.DataPage.OrderDirection" />
-	<input type="hidden"
-					name="Filter"
-					value="@Model.DataPage.Filter" />
-</form>
+﻿Show
+	<!-- # of tickets to display -->
+	<input type="text"
+					name="PageSize"
+					value="@Model.DataPage.PageSize"
+					min="1"
+					max="99999"
+					style="height: 30px; width: 30px; display:inline-block;"/>
+	<label class="mb-0"></label>

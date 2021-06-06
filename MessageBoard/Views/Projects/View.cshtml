@@ -4,44 +4,56 @@
 @{ ViewData["Title"] = Model.Project.Name; }
 
 <div class="main">
-	<div class="row">
-		<div class="col">
-			<h2 class="mb-header">
-				@Model.Project.Name 
-			</h2>
-			<div class="d-flex align-items-center" style="height:50%;">
+	<form id="project-view-form" method="GET">
+		<div class="project-view-menu">
+			<div class="project-view-menu__header">
+				<h2 class="mb-header">
+					@Model.Project.Name 
+				</h2>
+			</div>
+			<div class="project-view-menu__buttons">
 				<partial name="ViewComponents/_newTicketButton.cshtml" />
 				<partial name="ViewComponents/_editProjectButton.cshtml" />
 			</div>
+			<div class="project-view-menu__filters">
+				<partial name="ViewComponents/_filterMenu.cshtml" />
+			</div>
+			<div class="project-view-menu__search">	 
+				<partial name="ViewComponents/_searchInput.cshtml" />
+		 </div>
+			<div class="project-view-menu__pageSize">
+				<partial name="ViewComponents/_pageSize.cshtml" />
+			</div>
 		</div>
-		<div class="col d-flex justify-content-end align-self-center">
-			<partial name="ViewComponents/_filterMenu.cshtml" />
-		</div>
-	</div>
 
-	<div class="row">
-		<div class="col">
-			<partial name="ViewComponents/_ticketCount.cshtml" />
-		</div>
-		<div class="col d-flex justify-content-center">	
-			<partial name="ViewComponents/_pageArrows.cshtml" />
-		</div>
-		<div class="col d-flex justify-content-end">
-			@* <partial name="ViewComponents/_pageSize.cshtml" />*@
-			<partial name="ViewComponents/_searchInput.cshtml" /> 
-			<!--button that clears all filters -->
-			<a href="?" history="set" class="btn btn-default p-0 m-0" label="Reset filters to default"><i class="fa fa-times"></i> Reset Filters</a>
-		</div>
-	</div>
-
-	<table class="table">
+	<table class="table table-sm table-hover">
 		<partial name="ViewComponents/_tableHeader.cshtml" />
 
 		<partial name="ViewComponents/_tableRows.cshtml" />
 	</table>
 
-	<div class="col d-flex justify-content-center">	
+	<partial name="ViewComponents/_ticketCount.cshtml" /> 
+
+	<div>	
 		<partial name="ViewComponents/_pageArrows.cshtml" />
 	</div>
-
+	
+	<!-- other necessary params -->
+	<input type="hidden"
+					name="PageCount"
+					value="@Model.DataPage.PageCount"/>
+	<input type="hidden"
+					name="orderByColumn"
+					value="@Model.DataPage.OrderByColumn" />
+	<input type="hidden"
+					name="orderDirection"
+					value="@Model.DataPage.OrderDirection" />
+	<input type="hidden"
+					name="Filter"
+					value="@Model.DataPage.Filter" />
+	<input type="hidden"
+					id="ShowFilterDropdown"
+					name="ShowFilterDropdown"
+					value="@Model.ShowFilterDropdown" />
+	</form>
 </div>

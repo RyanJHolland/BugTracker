@@ -1,9 +1,85 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+.project-view-menu {
+	display: grid;
+	grid-gap: 0.5em;
+	grid-auto-columns: auto;
+	grid-auto-rows: auto;
+	padding-bottom: 0.5em;
+}
+
+.project-view-menu__header {
+	grid-area: 1 / 1;
+}
+
+.project-view-menu__buttons {
+	grid-area: 2 / 1;
+	align-self: end;
+	justify-self: left;
+}
+
+.project-view-menu__search {
+	grid-area: 3 / 2;
+	align-self: end;
+	justify-self: right;
+}
+
+.project-view-menu__filters {
+	grid-area: 2 / 2;
+	align-self: center;
+	justify-self: right;
+}
+
+.project-view-menu__pageSize {
+	grid-area: 1 / 2;
+	align-self: start;
+	justify-self: right;
+}
+
+@media (max-width: 1200px) {
+	.container {
+		margin-left: 0px;
+	}
+
+	.project-view-menu__header {
+		grid-area: 1 / 1;
+	}
+
+	.project-view-menu__buttons {
+		grid-area: 2 / 1;
+	}
+
+	.project-view-menu__search {
+		grid-area: 5 / 2;
+		align-self: start;
+		justify-self: center;
+	}
+
+	.project-view-menu__filters {
+		grid-area: 1 / 2 / span 4;
+		align-self: center;
+		justify-self: center;
+	}
+
+	.project-view-menu__pageSize {
+		grid-area: 4 / 1;
+		align-self: start;
+		justify-self: left;
+	}
+
+	.project-view-menu__arrows {
+		grid-area: 5 / 1;
+		align-self: start;
+		justify-self: left;
+	}
+}
+
 .categoryDiv {
+	display: inline-block;
+	width: 1.53em;
 	border-radius: 12px;
-	width: 90px;
+	text-align: center;
 }
 
 /* from the accounts page */

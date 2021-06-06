@@ -18,6 +18,8 @@ namespace TicketTracker.Controllers
 {
 	public class ProjectsController : Controller
 	{
+
+		/***********************************************************/
 		#region Constructor
 
 		private readonly IConfiguration _config;
@@ -35,15 +37,52 @@ namespace TicketTracker.Controllers
 
 		#endregion Constructor
 
-		// Displays all projects. This is where a user selects a project to browse.
-		// GET: Projects
-		public async Task<IActionResult> Index()
-		{
-			return View(await _context.Project.ToListAsync());
-		}
 
-		// GET: Projects/View/5
+		/***********************************************************/
+		#region GET: Projects
+		public async Task<IActionResult> Index(
+			string filter = ""
+			)
+		{
+
+			#region Start to build a query
+			var query = _context.Project
+				.AsQueryable();
+			#endregion
+
+			#region Add search string filter to query
+			if (!String.IsNullOrWhiteSpace(filter))
+			{
+				query = query
+				.Where(t => t.Name.Contains(filter)
+					|| t.Description.Contains(filter)
+					|| t.ProjectOwnerUserName.Contains(filter));
+			}
+			#endregion
+
+			#region Authorize user to edit this project
+			bool userCanCreateProject =
+				User.IsInRole("Administrator") || User.IsInRole("Project Manager");
+			#endregion
+
+			#region Instantiate view model
+			var vm = new ProjectsIndex()
+			{
+				Projects = await query.ToListAsync(),
+				UserCanCreateProject = userCanCreateProject,
+				Filter = filter
+			};
+			#endregion
+
+			return View(vm);
+		}
+		#endregion
+
+
+		/***********************************************************/
+		#region GET: Projects/View/5
 		// Displays the most recent tickets on the chosen project. This is where a user browses a project's tickets.
+		#region params
 		public async Task<IActionResult> View(
 			int? id,
 			int currentPage = 1,
@@ -65,27 +104,34 @@ namespace TicketTracker.Controllers
 			string Unassigned = "on",
 			string Open = "on",
 			string Resolved = "off",
-			string Cancelled = "off"
+			string Cancelled = "off",
+			bool ShowFilterDropdown = false
 			)
+		#endregion
 		{
+			#region validate Id
 			if (id == null)
 			{
 				return NotFound();
 			}
+			#endregion
 
+			#region validate Project exists
 			var project = await _context.Project
 				.FirstOrDefaultAsync(m => m.Id == id);
 			if (project == null)
 			{
 				return NotFound();
 			}
+			#endregion
 
-			// Start to build a query
+			#region Start to build a query
 			var query = _context.Ticket
 				.Where(t => t.ParentProjectId == id)
 				.AsQueryable();
+			#endregion
 
-			// Apply filters
+			#region Apply filters
 			if (Bug == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Bug)); }
 			if (Feature == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Feature)); }
 			if (Style == "off") { query = query.Where(t => !t.Category.Equals(Ticket.CategoryEnum.Style)); }
@@ -98,11 +144,13 @@ namespace TicketTracker.Controllers
 			if (Unassigned == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Unassigned)); }
 			if (Resolved == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Resolved)); }
 			if (Cancelled == "off") { query = query.Where(t => !t.Status.Equals(Ticket.StatusEnum.Cancelled)); }
+			#endregion
 
-			// Get count of all tickets in project
+			#region Get count of all tickets in project
 			var fullCount = await query.CountAsync();
+			#endregion
 
-			// Add search string filter to query
+			#region Add search string filter to query
 			if (!String.IsNullOrWhiteSpace(filter))
 			{
 				query = query
@@ -110,11 +158,13 @@ namespace TicketTracker.Controllers
 					|| t.Title.Contains(filter)
 					|| t.UserName.Contains(filter));
 			}
+			#endregion
 
-			// Get # of tickets that match the filter
+			#region Get # of tickets that match the filter
 			var filteredCount = await query.CountAsync();
+			#endregion
 
-			// Add sort order and direction to query
+			#region Add sort order and direction to query
 			switch (orderByColumn)
 			{
 				case "Title":
@@ -153,11 +203,13 @@ namespace TicketTracker.Controllers
 						: query.OrderBy(t => t.CreationTime);
 					break;
 			}
+			#endregion
 
-			// Paginate the query
+			#region Paginate the query
 			query = query.Skip((currentPage - 1) * pageSize).Take(pageSize);
+			#endregion
 
-			// Authorize user to edit this project
+			#region Authorize user to edit this project
 			bool userCanEditProject = true;
 			if (!User.IsInRole("Administrator"))
 			{
@@ -167,12 +219,14 @@ namespace TicketTracker.Controllers
 					userCanEditProject = false;
 				}
 			}
+			#endregion
 
-			// Instantiate view model
+			#region Instantiate view model
 			var vm = new ViewProjectVM()
 			{
 				Project = project,
-				UserCanEditProject = userCanEditProject
+				UserCanEditProject = userCanEditProject,
+				ShowFilterDropdown = ShowFilterDropdown
 			};
 			vm.DataPage = new DataPage<Ticket>()
 			{
@@ -184,20 +238,29 @@ namespace TicketTracker.Controllers
 				OrderByColumn = orderByColumn,
 				OrderDirection = orderDirection
 			};
+			#endregion
 
-			// Execute the query
+			#region Execute the query
 			vm.DataPage.Items = query.ToArray();
+			#endregion
 
 			return View(vm);
 		}
+		#endregion
 
-		// GET: Projects/Create
+
+		/***********************************************************/
+		#region GET: Projects/Create
 		[Authorize(Roles = "Administrator, Project Manager")]
 		public IActionResult Create()
 		{
 			return View();
 		}
+		#endregion
 
+
+		/***********************************************************/
+		#region POST: Projects/Create
 		// POST: Projects/Create
 		[Authorize(Roles = "Administrator, Project Manager")]
 		[HttpPost]
@@ -220,8 +283,11 @@ namespace TicketTracker.Controllers
 			}
 			return View(project);
 		}
+		#endregion
 
-		// GET: Projects/Edit/5
+
+		/***********************************************************/
+		#region GET: Projects/Edit/5
 		[Authorize(Roles = "Administrator, Project Manager")]
 		public async Task<IActionResult> Edit(int? id)
 		{
@@ -289,8 +355,11 @@ namespace TicketTracker.Controllers
 			};
 			return View(vm);
 		}
+		#endregion
 
-		// POST: Projects/Edit/5
+
+		/***********************************************************/
+		#region POST: Projects/Edit/5
 		[Authorize(Roles = "Administrator, Project Manager")]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
@@ -364,8 +433,11 @@ namespace TicketTracker.Controllers
 			}
 			return View(project);
 		}
+		#endregion
 
-		// GET: Projects/Delete/5
+
+		/***********************************************************/
+		#region GET: Projects/Delete/5
 		[Authorize(Roles = "Administrator, Project Manager")]
 		public async Task<IActionResult> Delete(int? id)
 		{
@@ -393,8 +465,11 @@ namespace TicketTracker.Controllers
 
 			return View(project);
 		}
+		#endregion
 
-		// POST: Projects/Delete/5
+
+		/***********************************************************/
+		#region POST: Projects/Delete/5
 		[Authorize(Roles = "Administrator, Project Manager")]
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
@@ -441,4 +516,6 @@ namespace TicketTracker.Controllers
 			return _context.Project.Any(e => e.Id == id);
 		}
 	}
+	#endregion
+
 }

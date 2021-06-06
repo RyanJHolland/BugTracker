@@ -1,14 +1,13 @@
-﻿using TicketTracker.Models;
+﻿using System.Collections.Generic;
+using TicketTracker.Models;
 
 namespace TicketTracker.ViewModels
 {
-	public class ViewProjectVM
+	public class ProjectsIndex
 	{
-		public Project Project { get; set; }
-		public Ticket Ticket { get; set; }
-		public DataPage<Ticket> DataPage { get; set; }
-		public bool ShowFilterDropdown { get; set; }
-		public bool UserCanEditProject { get; set; }
+		public List<Project> Projects { get; set; }
+		public bool UserCanCreateProject { get; set; }
+		public string Filter { get; set; }
 
 		//public string[] CategoryValues = Enum.GetNames(typeof(Ticket.CategoryEnum));
 

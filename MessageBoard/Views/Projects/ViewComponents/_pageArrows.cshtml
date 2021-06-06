@@ -1,7 +1,6 @@
 ﻿<!-- Previous / Next Page links-->
 @if (Model.DataPage.PageSize < Model.DataPage.FilteredCount)
 {
-	<div class="page-controls">
 	<!-- Previous Page link -->
 	@if (Model.DataPage.CurrentPage > 1)
 	{
@@ -44,5 +43,4 @@
 			<i class="fas fa-arrow-right"></i>
 		</button>
 	}
-	</div>
 }

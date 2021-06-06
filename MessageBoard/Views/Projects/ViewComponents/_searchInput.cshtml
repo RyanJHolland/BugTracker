@@ -1,25 +1,20 @@
-﻿<!-- search input field -->
-<form class="float-right pb-2 pr-4" style="width: 200px;">
-	<div class="input-group">
-		<input type="text" name="filter" class="form-control" placeholder="Search..." value="@Model.DataPage.Filter" style="height: 30px;">
+﻿
+	<!-- search input field -->
+	<div class="input-group" style="width: 16em;">
+		<input 
+		type="text" 
+		name="filter" 
+		class="form-control" 
+		placeholder="Search..." 
+		value="@Model.DataPage.Filter" 
+		style="height: 30px;">
 		<div class="input-group-append">
 				<button type="submit" class="btn btn-sm btn-default rounded-right" style="height: 30px;"><i class="fa fa-search"></i></button>
 		</div>
-		<!--button that clears all filters 
+		
+		<!--button that clears search -->
+		<!--
 		<a href="?" history="set" class="btn btn-sm btn-light ml-2" style="height: 30px;"><i class="fa fa-times"></i></a>
 		-->
-		<!-- other necessary params -->
-		<input type="hidden"
-						name="PageCount"
-						value="@Model.DataPage.PageCount" />
-		<input type="hidden"
-						name="orderByColumn"
-						value="@Model.DataPage.OrderByColumn" />
-		<input type="hidden"
-						name="orderDirection"
-						value="@Model.DataPage.OrderDirection" />
-		<input type="hidden"
-						name="Filter"
-						value="@Model.DataPage.Filter" />
 	</div>
-</form>
+				
