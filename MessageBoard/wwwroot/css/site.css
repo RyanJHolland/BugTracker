@@ -1,16 +1,26 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+
+/********* Nonspecific *********/
+.bg-gray {
+	background-color: #eaeaea;
+}
+
+/********* Ticket View layout *********/
+
+
+/********* Project View layout *********/
 .project-view-menu {
 	display: grid;
 	grid-gap: 0.5em;
-	grid-auto-columns: auto;
-	grid-auto-rows: auto;
 	padding-bottom: 0.5em;
 }
 
 .project-view-menu__header {
 	grid-area: 1 / 1;
+	align-self: start;
+	justify-self: left;
 }
 
 .project-view-menu__buttons {
@@ -19,28 +29,26 @@ for details on configuring this project to bundle and minify static web assets. 
 	justify-self: left;
 }
 
-.project-view-menu__search {
-	grid-area: 3 / 2;
+.project-view-menu__filters {
+	grid-area: 1 / 2;
 	align-self: end;
 	justify-self: right;
 }
 
-.project-view-menu__filters {
+.project-view-menu__search {
 	grid-area: 2 / 2;
-	align-self: center;
-	justify-self: right;
-}
-
-.project-view-menu__pageSize {
-	grid-area: 1 / 2;
-	align-self: start;
+	align-self: end;
 	justify-self: right;
 }
 
 @media (max-width: 1200px) {
+
 	.container {
 		margin-left: 0px;
 	}
+}
+
+@media (max-width: 500px) {
 
 	.project-view-menu__header {
 		grid-area: 1 / 1;
@@ -51,27 +59,15 @@ for details on configuring this project to bundle and minify static web assets. 
 	}
 
 	.project-view-menu__search {
-		grid-area: 5 / 2;
-		align-self: start;
-		justify-self: center;
+		grid-area: 4 / 1;
+		align-self: end;
+		justify-self: start;
 	}
 
 	.project-view-menu__filters {
-		grid-area: 1 / 2 / span 4;
-		align-self: center;
-		justify-self: center;
-	}
-
-	.project-view-menu__pageSize {
-		grid-area: 4 / 1;
-		align-self: start;
-		justify-self: left;
-	}
-
-	.project-view-menu__arrows {
-		grid-area: 5 / 1;
-		align-self: start;
-		justify-self: left;
+		grid-area: 3 / 1;
+		align-self: end;
+		justify-self: start;
 	}
 }
 
@@ -82,7 +78,6 @@ for details on configuring this project to bundle and minify static web assets. 
 	text-align: center;
 }
 
-/* from the accounts page */
 #body-content {
 	margin-bottom: 32px;
 }

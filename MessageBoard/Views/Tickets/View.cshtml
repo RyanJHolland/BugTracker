@@ -2,71 +2,72 @@
 
 @{ ViewData["Title"] = Model.Ticket.Title; }
 
-<!-- Title -->
-<h2 class="mb-header">
-	@Model.Ticket.Title
-</h2>
-
 
 <!-- Info display -->
-<div class="ticket-container">
+<div class="p-4">
+
+	<!-- Title -->
+	<h2 class="mb-header">
+		@Model.Ticket.Title
+	</h2>
+
 	<dl class="row">
 
 		<!-- Project info -->
-		<dt class="col-sm-2">
-			Project
+		<dt class="col-sm-1 text-nowrap">
+			Project:
 		</dt>
-		<dd class="col-sm-4">
+		<dd class="col-sm-3">
 			<a asp-controller="Projects" asp-action="View" asp-route-id="@Model.Project.Id">
 				@Model.Project.Name
 			</a>
 		</dd>
 
 		<!-- Category info -->
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Ticket.Category)
+		<dt class="col-sm-1 text-nowrap">
+			@Html.DisplayNameFor(model => model.Ticket.Category):
 		</dt>
-		<dd class="col-sm-4">
+		<dd class="col-sm-3">
 			@Html.DisplayFor(model => model.Ticket.Category)
 		</dd>
 
 		<!-- Creation time info -->
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Ticket.CreationTime)
+		<dt class="col-sm-1 text-nowrap">
+			@Html.DisplayNameFor(model => model.Ticket.CreationTime):
 		</dt>
-		<dd class="col-sm-4">
+		<dd class="col-sm-3">
 			@Html.DisplayFor(model => model.Ticket.CreationTime)
 		</dd>
 
 		<!-- Priority info -->
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Ticket.Priority)
+		<dt class="col-sm-1 text-nowrap">
+			@Html.DisplayNameFor(model => model.Ticket.Priority):
 		</dt>
-		<dd class="col-sm-4">
+		<dd class="col-sm-3 text-nowrap">
 			@Html.DisplayFor(model => model.Ticket.Priority)
 		</dd>
 
 		<!-- Owner info -->
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Ticket.UserName)
+		<dt class="col-sm-1 text-nowrap">
+			@Html.DisplayNameFor(model => model.Ticket.UserName):
 		</dt>
-		<dd class="col-sm-4">
+		<dd class="col-sm-3 text-nowrap">
 			@Html.DisplayFor(model => model.Ticket.UserName)
 		</dd>
 
 		<!-- Status info -->
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Ticket.Status)
+		<dt class="col-sm-1 text-nowrap">
+			@Html.DisplayNameFor(model => model.Ticket.Status):
 		</dt>
-		<dd class="col-sm-4">
+		<dd class="col-sm-3 text-nowrap">
 			@Html.DisplayFor(model => model.Ticket.Status)
 		</dd>
 
 		<!-- Body info -->
-		<dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Ticket.Body)
+		<dt class="col-sm-1 text-nowrap">
+			Ticket:
 		</dt>
-		<dd class="col-sm-10">
+		<dd class="col-sm-11">
 			@Html.DisplayFor(model => model.Ticket.Body)
 		</dd>
 	</dl>
@@ -94,27 +95,11 @@
 		<div class="border-top">
 			<br />
 			<dl class="row">
-
-				<!-- Comment user name info -->
-				<dt class="col-sm-2">
-					Commenter
-				</dt>
-				<dd class="col-sm-4">
+				<!-- Comment -->
+				<dd class="col-sm-2">
+					@Html.DisplayFor(model => item.CreationTime)
 					@Html.DisplayFor(model => item.UserName)
 				</dd>
-
-				<!-- Creation date info -->
-				<dt class="col-sm-2">
-					Time
-				</dt>
-				<dd class="col-sm-4">
-					@Html.DisplayFor(model => item.CreationTime)
-				</dd>
-
-				<!-- Comment body info -->
-				<dt class="col-sm-2">
-					Comment
-				</dt>
 				<dd class="col-sm-10">
 					@Html.DisplayFor(model => item.Body)
 				</dd>

@@ -21,9 +21,6 @@
 			<div class="project-view-menu__search">	 
 				<partial name="ViewComponents/_searchInput.cshtml" />
 		 </div>
-			<div class="project-view-menu__pageSize">
-				<partial name="ViewComponents/_pageSize.cshtml" />
-			</div>
 		</div>
 
 	<table class="table table-sm table-hover">
@@ -33,6 +30,7 @@
 	</table>
 
 	<partial name="ViewComponents/_ticketCount.cshtml" /> 
+				<partial name="ViewComponents/_pageSize.cshtml" />
 
 	<div>	
 		<partial name="ViewComponents/_pageArrows.cshtml" />
@@ -43,9 +41,11 @@
 					name="PageCount"
 					value="@Model.DataPage.PageCount"/>
 	<input type="hidden"
+					id="orderByColumn_input"
 					name="orderByColumn"
 					value="@Model.DataPage.OrderByColumn" />
 	<input type="hidden"
+					id="orderByDirection_input"
 					name="orderDirection"
 					value="@Model.DataPage.OrderDirection" />
 	<input type="hidden"
